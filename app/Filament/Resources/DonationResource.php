@@ -18,6 +18,8 @@ class DonationResource extends Resource
 {
     protected static ?string $model = Donation::class;
 
+    protected static ?int $navigationSort = 1;
+
     protected static ?string $navigationIcon = 'heroicon-o-heart';
 
     protected static ?string $navigationLabel = 'Donations';
@@ -25,8 +27,6 @@ class DonationResource extends Resource
     protected static ?string $modelLabel = 'Donation';
 
     protected static ?string $pluralModelLabel = 'Donations';
-
-    protected static ?int $navigationSort = 4;
 
     public static function canViewAny(): bool
     {
@@ -77,63 +77,66 @@ class DonationResource extends Resource
                             ->default(fn () => auth()->id())
                             ->required(),
 
-                        Forms\Components\Select::make('donor_id')
-                            ->label('Donor')
-                            ->options(\App\Models\User::where('active', true)->pluck('name', 'id'))
-                            ->searchable()
-                            ->preload()
-                            ->required(fn () => auth()->user()?->isAdmin())
-                            ->visible(fn () => auth()->user()?->isAdmin())
-                            ->afterStateUpdated(function ($state, Forms\Set $set) {
-                                if (auth()->user()?->isAdmin()) {
-                                    $set('user_id', $state);
-                                }
-                            })
-                            ->default(fn () => auth()->user()?->isAdmin() ? null : auth()->id()),
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\Select::make('donor_id')
+                                    ->label('Donor')
+                                    ->options(\App\Models\User::where('active', true)->pluck('name', 'id'))
+                                    ->searchable()
+                                    ->preload()
+                                    ->required(fn () => auth()->user()?->isAdmin())
+                                    ->visible(fn () => auth()->user()?->isAdmin())
+                                    ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                        if (auth()->user()?->isAdmin()) {
+                                            $set('user_id', $state);
+                                        }
+                                    })
+                                    ->default(fn () => auth()->user()?->isAdmin() ? null : auth()->id()),
 
-                        Forms\Components\Select::make('donation_type')
-                            ->options([
-                                'item' => 'Item Donation',
-                                'cash' => 'Cash Donation',
-                            ])
-                            ->default('item')
-                            ->live()
-                            ->required(),
+                                Forms\Components\Select::make('donation_type')
+                                    ->options([
+                                        'item' => 'Item Donation',
+                                        'cash' => 'Cash Donation',
+                                    ])
+                                    ->default('item')
+                                    ->live()
+                                    ->required(),
 
-                        Forms\Components\Select::make('item_type_id')
-                            ->label('Type of Item')
-                            ->options(\App\Models\ItemType::active()->pluck('name', 'id'))
-                            ->searchable()
-                            ->preload()
-                            ->required()
-                            ->visible(fn (Forms\Get $get) => $get('donation_type') === 'item'),
+                                Forms\Components\Select::make('item_type_id')
+                                    ->label('Type of Item')
+                                    ->options(\App\Models\ItemType::active()->pluck('name', 'id'))
+                                    ->searchable()
+                                    ->preload()
+                                    ->required()
+                                    ->visible(fn (Forms\Get $get) => $get('donation_type') === 'item'),
 
-                        Forms\Components\Select::make('item_status_id')
-                            ->label('Status of Item')
-                            ->options(\App\Models\ItemStatus::active()->pluck('name', 'id'))
-                            ->searchable()
-                            ->preload()
-                            ->required()
-                            ->visible(fn (Forms\Get $get) => $get('donation_type') === 'item'),
+                                Forms\Components\Select::make('item_status_id')
+                                    ->label('Status of Item')
+                                    ->options(\App\Models\ItemStatus::active()->pluck('name', 'id'))
+                                    ->searchable()
+                                    ->preload()
+                                    ->required()
+                                    ->visible(fn (Forms\Get $get) => $get('donation_type') === 'item'),
 
-                        // Cash donation fields
-                        Forms\Components\Select::make('payment_method')
-                            ->options([
-                                'cash' => 'Cash',
-                                'wish' => 'Wish',
-                                'omt' => 'OMT',
-                                'credit_card' => 'Credit Card',
-                            ])
-                            ->required()
-                            ->visible(fn (Forms\Get $get) => $get('donation_type') === 'cash'),
+                                // Cash donation fields
+                                Forms\Components\Select::make('payment_method')
+                                    ->options([
+                                        'cash' => 'Cash',
+                                        'wish' => 'Wish',
+                                        'omt' => 'OMT',
+                                        'credit_card' => 'Credit Card',
+                                    ])
+                                    ->required()
+                                    ->visible(fn (Forms\Get $get) => $get('donation_type') === 'cash'),
 
-                        Forms\Components\TextInput::make('amount')
-                            ->label('Amount')
-                            ->numeric()
-                            ->prefix('USD')
-                            ->minValue(0)
-                            ->required()
-                            ->visible(fn (Forms\Get $get) => $get('donation_type') === 'cash'),
+                                Forms\Components\TextInput::make('amount')
+                                    ->label('Amount')
+                                    ->numeric()
+                                    ->prefix('USD')
+                                    ->minValue(0)
+                                    ->required()
+                                    ->visible(fn (Forms\Get $get) => $get('donation_type') === 'cash'),
+                            ]),
                     ]),
 
                 Forms\Components\Section::make('Item Details')
@@ -143,6 +146,7 @@ class DonationResource extends Resource
                             ->multiple()
                             ->maxFiles(5)
                             ->image()
+                            ->imageEditor()
                             ->directory('donations/items')
                             ->visibility('public')
                             ->visible(fn (Forms\Get $get) => $get('donation_type') === 'item'),
@@ -155,41 +159,48 @@ class DonationResource extends Resource
                             ->visibility('public')
                             ->visible(fn (Forms\Get $get) => $get('donation_type') === 'item'),
 
-                        Forms\Components\DatePicker::make('pickup_date')
-                            ->label('Date of Pickup')
-                            ->minDate(now())
-                            ->visible(fn (Forms\Get $get) => $get('donation_type') === 'item'),
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\DatePicker::make('pickup_date')
+                                    ->label('Date of Pickup')
+                                    ->minDate(now())
+                                    ->visible(fn (Forms\Get $get) => $get('donation_type') === 'item'),
 
-                        Forms\Components\Textarea::make('notes')
-                            ->label('Notes')
-                            ->rows(4)
-                            ->maxLength(1000),
+                                Forms\Components\Textarea::make('notes')
+                                    ->label('Notes')
+                                    ->rows(4)
+                                    ->maxLength(1000),
+                            ]),
                     ])
                     ->visible(fn (Forms\Get $get) => $get('donation_type') === 'item'),
 
                 Forms\Components\Section::make('Admin Actions')
                     ->schema([
-                        Forms\Components\Select::make('current_status')
-                            ->options([
-                                'pending' => 'Pending',
-                                'approved' => 'Approved',
-                                'rejected' => 'Rejected',
-                                'completed' => 'Completed',
-                            ])
-                            ->default('pending')
-                            ->required(),
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\Select::make('current_status')
+                                    ->options([
+                                        'pending' => 'Pending',
+                                        'approved' => 'Approved',
+                                        'rejected' => 'Rejected',
+                                        'completed' => 'Completed',
+                                    ])
+                                    ->default('pending')
+                                    ->required(),
 
-                        Forms\Components\Textarea::make('status_note')
-                            ->label('Status Note')
-                            ->rows(3)
-                            ->maxLength(1000)
-                            ->helperText('Add a note explaining the status change, especially for rejections'),
+                                Forms\Components\Textarea::make('status_note')
+                                    ->label('Status Note')
+                                    ->rows(3)
+                                    ->maxLength(1000)
+                                    ->helperText('Add a note explaining the status change, especially for rejections'),
+                            ]),
 
                         Forms\Components\FileUpload::make('beneficiary_images')
                             ->label('Beneficiary Pictures')
                             ->multiple()
                             ->maxFiles(10)
                             ->image()
+                            ->imageEditor()
                             ->directory('donations/beneficiaries')
                             ->visibility('public'),
 

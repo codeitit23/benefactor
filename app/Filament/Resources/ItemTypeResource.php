@@ -19,6 +19,8 @@ class ItemTypeResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-tag';
 
+    protected static ?string $navigationGroup = 'Donation Settings';
+
     protected static ?string $navigationLabel = 'Item Types';
 
     protected static ?string $modelLabel = 'Item Type';

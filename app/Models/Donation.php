@@ -24,6 +24,7 @@ class Donation extends Model
         'status_note',
         'beneficiary_images',
         'beneficiary_video',
+        'beneficiary_id',
     ];
 
     protected $casts = [
@@ -57,6 +58,11 @@ class Donation extends Model
     public function itemStatus(): BelongsTo
     {
         return $this->belongsTo(ItemStatus::class);
+    }
+
+    public function beneficiary(): BelongsTo
+    {
+        return $this->belongsTo(Beneficiary::class);
     }
 
     public function scopePending($query)

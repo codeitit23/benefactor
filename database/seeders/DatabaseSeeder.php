@@ -36,6 +36,9 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ItemTypeSeeder::class,
             ItemStatusSeeder::class,
+            BeneficiaryStatusSeeder::class,
+            SeverityLevelSeeder::class,
+            NeedTypeSeeder::class,
         ]);
     }
 }

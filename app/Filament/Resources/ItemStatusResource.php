@@ -19,6 +19,8 @@ class ItemStatusResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-signal';
 
+    protected static ?string $navigationGroup = 'Donation Settings';
+
     protected static ?string $navigationLabel = 'Item Statuses';
 
     protected static ?string $modelLabel = 'Item Status';
