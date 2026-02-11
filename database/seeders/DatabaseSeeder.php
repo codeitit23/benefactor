@@ -35,6 +35,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             ItemTypeSeeder::class,
+            ItemSubcategorySeeder::class,
             ItemStatusSeeder::class,
             BeneficiaryStatusSeeder::class,
             SeverityLevelSeeder::class,

@@ -14,43 +14,43 @@ class ItemTypeSeeder extends Seeder
     {
         $itemTypes = [
             [
-                'name' => 'Clothing',
-                'description' => 'Shirts, pants, dresses, and other clothing items',
+                'name' => 'أجهزة منزلية',
                 'is_active' => true,
             ],
             [
-                'name' => 'Food',
-                'description' => 'Canned goods, fresh produce, and packaged food items',
+                'name' => 'أغراض خارجية',
                 'is_active' => true,
             ],
             [
-                'name' => 'Furniture',
-                'description' => 'Chairs, tables, beds, and other furniture items',
+                'name' => 'الكترونيات',
                 'is_active' => true,
             ],
             [
-                'name' => 'Electronics',
-                'description' => 'Phones, computers, appliances, and electronic devices',
+                'name' => 'غرفة الجلوس',
                 'is_active' => true,
             ],
             [
-                'name' => 'Books',
-                'description' => 'Textbooks, novels, educational materials',
+                'name' => 'غرفة الطعام',
                 'is_active' => true,
             ],
             [
-                'name' => 'Toys',
-                'description' => 'Children\'s toys, games, and entertainment items',
+                'name' => 'غرفة النوم',
                 'is_active' => true,
             ],
             [
-                'name' => 'Medical Supplies',
-                'description' => 'First aid kits, medications, medical equipment',
+                'name' => 'اغراض مطبخ',
                 'is_active' => true,
             ],
             [
-                'name' => 'Household Items',
-                'description' => 'Kitchenware, bedding, cleaning supplies',
+                'name' => 'اغراض حمام',
+                'is_active' => true,
+            ],
+            [
+                'name' => 'غرفة اطفال',
+                'is_active' => true,
+            ],
+            [
+                'name' => 'أغراض طبية',
                 'is_active' => true,
             ],
         ];

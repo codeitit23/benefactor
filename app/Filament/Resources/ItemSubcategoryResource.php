@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ItemTypeResource\Pages;
-use App\Filament\Resources\ItemTypeResource\RelationManagers;
-use App\Models\ItemType;
+use App\Filament\Resources\ItemSubcategoryResource\Pages;
+use App\Filament\Resources\ItemSubcategoryResource\RelationManagers;
+use App\Models\ItemSubcategory;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,21 +13,21 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class ItemTypeResource extends Resource
+class ItemSubcategoryResource extends Resource
 {
-    protected static ?string $model = ItemType::class;
-
-    protected static ?string $navigationIcon = 'heroicon-o-tag';
+    protected static ?string $model = ItemSubcategory::class;
 
     protected static ?string $navigationGroup = 'Donation Settings';
 
-    protected static ?string $navigationLabel = 'Item Types';
+    protected static ?string $navigationLabel = 'Item Subcategories';
 
-    protected static ?string $modelLabel = 'Item Type';
+    protected static ?string $modelLabel = 'Item Subcategory';
 
-    protected static ?string $pluralModelLabel = 'Item Types';
+    protected static ?string $pluralModelLabel = 'Item Subcategories';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 3;
+
+    protected static bool $shouldRegisterNavigation = false;
 
     public static function canViewAny(): bool
     {
@@ -38,9 +38,13 @@ class ItemTypeResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\Select::make('item_type_id')
+                    ->relationship('itemType', 'name')
+                    ->required()
+                    ->searchable(),
+
                 Forms\Components\TextInput::make('name')
                     ->required()
-                    ->unique(ignoreRecord: true)
                     ->maxLength(255),
 
                 Forms\Components\Toggle::make('is_active')
@@ -53,13 +57,13 @@ class ItemTypeResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('itemType.name')
+                    ->label('Item Type')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('subcategories_count')
-                    ->label('Subcategories')
-                    ->counts('subcategories')
+                Tables\Columns\TextColumn::make('name')
+                    ->searchable()
                     ->sortable(),
 
                 Tables\Columns\IconColumn::make('is_active')
@@ -77,6 +81,9 @@ class ItemTypeResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                Tables\Filters\SelectFilter::make('item_type_id')
+                    ->relationship('itemType', 'name')
+                    ->label('Item Type'),
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label('Status')
                     ->boolean()
@@ -94,8 +101,8 @@ class ItemTypeResource extends Resource
                         $record->update(['is_active' => !$record->is_active]);
                     })
                     ->requiresConfirmation()
-                    ->modalHeading('Toggle Item Type Status')
-                    ->modalDescription('Are you sure you want to change this item type\'s status?'),
+                    ->modalHeading('Toggle Item Subcategory Status')
+                    ->modalDescription('Are you sure you want to change this item subcategory\'s status?'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -108,16 +115,16 @@ class ItemTypeResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\ItemSubcategoryRelationManager::class,
+            //
         ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListItemTypes::route('/'),
-            'create' => Pages\CreateItemType::route('/create'),
-            'edit' => Pages\EditItemType::route('/{record}/edit'),
+            'index' => Pages\ListItemSubcategories::route('/'),
+            'create' => Pages\CreateItemSubcategory::route('/create'),
+            'edit' => Pages\EditItemSubcategory::route('/{record}/edit'),
         ];
     }
 }
