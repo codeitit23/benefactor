@@ -13,6 +13,7 @@ class Donation extends Model
         'user_id',
         'donation_type',
         'item_type_id',
+        'item_subcategory_id',
         'item_status_id',
         'payment_method',
         'amount',

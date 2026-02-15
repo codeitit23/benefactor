@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\Beneficiary;
 use App\Models\Donation;
 use App\Models\User;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
@@ -29,8 +30,8 @@ class DonationStatsWidget extends BaseWidget
         // Perhaps count of donations with beneficiary_images or something.
         // But to match, perhaps count of users with role 'beneficiary' if exists, but from User model, roles are 'admin', 'user'.
         // Perhaps it's a mistake, or count of donations that have beneficiary_images.
-        $beneficiaries = Donation::whereNotNull('beneficiary_images')->count(); // assuming each donation with beneficiary_images counts as a beneficiary.
-
+//        $beneficiaries = Donation::whereNotNull('beneficiary_images')->count(); // assuming each donation with beneficiary_images counts as a beneficiary.
+        $beneficiaries = Beneficiary::count();
         // Count of Donations per address - but donations don't have address, users have address.
         // Perhaps group by user address.
         // But for stats, maybe count unique addresses or something.
@@ -45,7 +46,7 @@ class DonationStatsWidget extends BaseWidget
         $uniqueAddresses = User::whereHas('donations')->distinct('address')->count('address');
 
         $stats = [
-            
+
             Stat::make('Item Donations', $itemDonations)
                 ->description('Total item donations')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
@@ -82,7 +83,7 @@ class DonationStatsWidget extends BaseWidget
                 ->color('primary'),
 
             Stat::make('Beneficiaries', $beneficiaries)
-                ->description('Donations with beneficiary images')
+                ->description('Total beneficiaries')
                 ->descriptionIcon('heroicon-m-heart')
                 ->color('rose'),
 

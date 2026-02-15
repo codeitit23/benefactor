@@ -25,6 +25,11 @@ class NeedTypeResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Need Types';
 
+       public static function canViewAny(): bool
+    {
+        return auth()->user()?->isAdmin();
+    }
+
     public static function form(Form $form): Form
     {
         return $form

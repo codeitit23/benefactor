@@ -77,7 +77,7 @@ class DonationResource extends Resource
                             ->default(fn () => auth()->id())
                             ->required(),
 
-                        Forms\Components\Grid::make(2)
+                        Forms\Components\Grid::make(4)
                             ->schema([
                                 Forms\Components\Select::make('donor_id')
                                     ->label('Donor')
@@ -102,13 +102,29 @@ class DonationResource extends Resource
                                     ->live()
                                     ->required(),
 
+
                                 Forms\Components\Select::make('item_type_id')
                                     ->label('Type of Item')
                                     ->options(\App\Models\ItemType::active()->pluck('name', 'id'))
                                     ->searchable()
                                     ->preload()
                                     ->required()
+                                    ->live()
                                     ->visible(fn (Forms\Get $get) => $get('donation_type') === 'item'),
+
+                                Forms\Components\Select::make('item_subcategory_id')
+                                    ->label('Item Subcategory')
+                                    ->options(function (callable $get) {
+                                        $typeId = $get('item_type_id');
+                                        if (!$typeId) return [];
+                                        return \App\Models\ItemSubcategory::where('item_type_id', $typeId)
+                                            ->active()
+                                            ->pluck('name', 'id');
+                                    })
+                                    ->searchable()
+                                    ->preload()
+                                    ->required()
+                                    ->visible(fn (Forms\Get $get) => $get('donation_type') === 'item' && $get('item_type_id')),
 
                                 Forms\Components\Select::make('item_status_id')
                                     ->label('Status of Item')
@@ -178,6 +194,24 @@ class DonationResource extends Resource
                     ->schema([
                         Forms\Components\Grid::make(2)
                             ->schema([
+                                Forms\Components\Select::make('beneficiary_id')
+                                    ->label('Relate to Beneficiary')
+                                    ->options(function () {
+                                        return \App\Models\Beneficiary::query()
+                                            ->pluck('name', 'id');
+                                    })
+                                    ->getSearchResultsUsing(function (string $search) {
+                                        return \App\Models\Beneficiary::query()
+                                            ->where('name', 'like', "%{$search}%")
+                                            ->orWhere('phone', 'like', "%{$search}%")
+                                            ->limit(10)
+                                            ->pluck('name', 'id');
+                                    })
+                                    ->getOptionLabelUsing(fn ($value) => \App\Models\Beneficiary::find($value)?->name)
+                                    ->searchable()
+                                    ->preload()
+                                    ->nullable(),
+
                                 Forms\Components\Select::make('current_status')
                                     ->options([
                                         'pending' => 'Pending',
@@ -230,6 +264,12 @@ class DonationResource extends Resource
                     ->sortable()
                     ->visible(fn () => auth()->user()?->isAdmin()),
 
+                Tables\Columns\TextColumn::make('beneficiary.name')
+                    ->label('Donated To')
+                    ->searchable()
+                    ->sortable()
+                    ->placeholder('Not assigned'),
+
                 Tables\Columns\TextColumn::make('donation_type')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -270,6 +310,12 @@ class DonationResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                Tables\Filters\SelectFilter::make('beneficiary_id')
+                    ->label('Beneficiary')
+                    ->relationship('beneficiary', 'name')
+                    ->preload()
+                    ->searchable(),
+
                 Tables\Filters\SelectFilter::make('donation_type')
                     ->options([
                         'item' => 'Item Donation',
@@ -308,6 +354,34 @@ class DonationResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('relate_beneficiary')
+                    ->label('Relate Beneficiary')
+                    ->icon('heroicon-o-user-plus')
+                    ->color('primary')
+                    ->visible(fn () => auth()->user()?->isAdmin())
+                    ->form([
+                        Forms\Components\Select::make('beneficiary_id')
+                            ->label('Select Beneficiary')
+                            ->options(function () {
+                                return \App\Models\Beneficiary::query()
+                                    ->pluck('name', 'id');
+                            })
+                            ->getSearchResultsUsing(function (string $search) {
+                                return \App\Models\Beneficiary::query()
+                                    ->where('name', 'like', "%{$search}%")
+                                    ->orWhere('phone', 'like', "%{$search}%")
+                                    ->limit(10)
+                                    ->pluck('name', 'id');
+                            })
+                            ->getOptionLabelUsing(fn ($value) => \App\Models\Beneficiary::find($value)?->name)
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->helperText('Search by name or phone number'),
+                    ])
+                    ->action(function ($record, array $data) {
+                        $record->update(['beneficiary_id' => $data['beneficiary_id']]);
+                    }),
                 Tables\Actions\Action::make('approve')
                     ->label('Approve')
                     ->icon('heroicon-o-check-circle')

@@ -14,7 +14,7 @@ class Beneficiary extends Model
         'phone',
         'email',
         'address',
-        'beneficiary_status_id',
+        'status',
         'severity_level_id',
     ];
 
@@ -23,10 +23,6 @@ class Beneficiary extends Model
         return $this->belongsToMany(NeedType::class, 'beneficiaries_need_types');
     }
 
-    public function status(): BelongsTo
-    {
-        return $this->belongsTo(BeneficiaryStatus::class, 'beneficiary_status_id');
-    }
 
     public function severityLevel(): BelongsTo
     {

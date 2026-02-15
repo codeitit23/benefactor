@@ -43,25 +43,6 @@ class ItemStatusResource extends Resource
                     ->unique(ignoreRecord: true)
                     ->maxLength(255),
 
-                Forms\Components\Textarea::make('description')
-                    ->maxLength(1000)
-                    ->rows(3),
-
-                Forms\Components\Select::make('color')
-                    ->options([
-                        'gray' => 'Gray',
-                        'red' => 'Red',
-                        'orange' => 'Orange',
-                        'yellow' => 'Yellow',
-                        'green' => 'Green',
-                        'blue' => 'Blue',
-                        'indigo' => 'Indigo',
-                        'purple' => 'Purple',
-                        'pink' => 'Pink',
-                    ])
-                    ->default('gray')
-                    ->required(),
-
                 Forms\Components\Toggle::make('is_active')
                     ->label('Active')
                     ->default(true),
@@ -75,19 +56,6 @@ class ItemStatusResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
-
-                Tables\Columns\TextColumn::make('description')
-                    ->limit(50)
-                    ->tooltip(function (Tables\Columns\TextColumn $column): ?string {
-                        $state = $column->getState();
-                        if (strlen($state) <= 50) {
-                            return null;
-                        }
-                        return $state;
-                    }),
-
-                Tables\Columns\ColorColumn::make('color')
-                    ->label('Color'),
 
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean()

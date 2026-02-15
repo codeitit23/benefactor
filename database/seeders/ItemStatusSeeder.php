@@ -15,32 +15,22 @@ class ItemStatusSeeder extends Seeder
         $itemStatuses = [
             [
                 'name' => 'New',
-                'description' => 'Brand new, unused items',
-                'color' => 'green',
                 'is_active' => true,
             ],
             [
                 'name' => 'Good',
-                'description' => 'Slightly used but in good condition',
-                'color' => 'blue',
                 'is_active' => true,
             ],
             [
                 'name' => 'Fair',
-                'description' => 'Used items that need some repair',
-                'color' => 'yellow',
                 'is_active' => true,
             ],
             [
                 'name' => 'Poor',
-                'description' => 'Heavily used items',
-                'color' => 'orange',
                 'is_active' => true,
             ],
             [
                 'name' => 'Damaged',
-                'description' => 'Items that are damaged and need repair',
-                'color' => 'red',
                 'is_active' => true,
             ],
         ];

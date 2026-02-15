@@ -37,7 +37,7 @@ class DatabaseSeeder extends Seeder
             ItemTypeSeeder::class,
             ItemSubcategorySeeder::class,
             ItemStatusSeeder::class,
-            BeneficiaryStatusSeeder::class,
+            // BeneficiaryStatusSeeder::class, // removed: table and seeder no longer exist
             SeverityLevelSeeder::class,
             NeedTypeSeeder::class,
         ]);

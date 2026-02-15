@@ -6,6 +6,7 @@ use Filament\Forms\Components;
 use Filament\Forms\Form;
 use Filament\Pages\Auth\Register as BaseRegister;
 use Illuminate\Support\Facades\Hash;
+use Filament\Forms;
 
 class Register extends BaseRegister
 {

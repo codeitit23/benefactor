@@ -5,7 +5,6 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\BeneficiaryResource\Pages;
 use App\Filament\Resources\BeneficiaryResource\RelationManagers;
 use App\Models\Beneficiary;
-use App\Models\BeneficiaryStatus;
 use App\Models\SeverityLevel;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -29,6 +28,11 @@ class BeneficiaryResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Beneficiaries';
 
+       public static function canViewAny(): bool
+    {
+        return auth()->user()?->isAdmin();
+    }
+    
     public static function form(Form $form): Form
     {
         return $form
@@ -61,10 +65,10 @@ class BeneficiaryResource extends Resource
                     ->preload()
                     ->required(),
 
-                Forms\Components\Select::make('beneficiary_status_id')
-                    ->label('Status of Beneficiary')
-                    ->options(BeneficiaryStatus::pluck('name', 'id'))
-                    ->required(),
+                Forms\Components\TextInput::make('status')
+                    ->label('Status')
+                    ->required()
+                    ->maxLength(255),
 
                 Forms\Components\Select::make('severity_level_id')
                     ->label('Level of Severity')
@@ -94,7 +98,7 @@ class BeneficiaryResource extends Resource
                     ->label('Address')
                     ->limit(50),
 
-                Tables\Columns\TextColumn::make('status.name')
+                Tables\Columns\TextColumn::make('status')
                     ->label('Status')
                     ->sortable(),
 
@@ -107,14 +111,30 @@ class BeneficiaryResource extends Resource
                     ->listWithLineBreaks(),
 
                 Tables\Columns\TextColumn::make('donations_count')
-                    ->label('Donations Count')
-                    ->counts('donations'),
+                    ->label('Donations Received')
+                    ->counts('donations')
+                    ->badge()
+                    ->color(fn ($state) => $state > 0 ? 'success' : 'gray'),
+
+                Tables\Columns\IconColumn::make('has_donations')
+                    ->label('Has Donations')
+                    ->getStateUsing(fn ($record) => $record->donations()->exists())
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->trueColor('success')
+                    ->falseColor('danger'),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('view_donations')
+                    ->label('View Donations')
+                    ->icon('heroicon-o-eye')
+                    ->color('info')
+                    ->url(fn ($record) => DonationResource::getUrl('index') . '?tableFilters[beneficiary_id][value]=' . $record->id, shouldOpenInNewTab: true),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

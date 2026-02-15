@@ -1,11 +1,14 @@
 <?php
-
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Homepage;
+use App\Filament\Pages\TestPage;
+use App\Filament\Resources\NeedTypeResource;
+use BezhanSalleh\FilamentLanguageSwitch\FilamentLanguageSwitch;
 use App\Filament\Pages\Login;
 use App\Filament\Pages\Register;
-use App\Filament\Widgets\DonationStatsWidget;
-use App\Filament\Widgets\ItemTypeTableWidget;
+//use App\Filament\Widgets\DonationStatsWidget;
+//use App\Filament\Widgets\ItemTypeTableWidget;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -39,14 +42,18 @@ class AdminPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+//                \App\Filament\Pages\TestPage::class,
+//                 Homepage::class,
+//                 TestPage::class,
             ])
-            ->widgets([
-                // Widgets\AccountWidget::class,
-                // Widgets\FilamentInfoWidget::class,
-                DonationStatsWidget::class,
-                ItemTypeTableWidget::class,
-            ])
+            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+
+            // ->widgets([
+            //     // Widgets\AccountWidget::class,
+            //     // Widgets\FilamentInfoWidget::class,
+            //     DonationStatsWidget::class,
+            //     ItemTypeTableWidget::class,
+            // ])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -58,6 +65,7 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
+            // Language switcher is now configured globally in AppServiceProvider
             ->authMiddleware([
                 Authenticate::class,
             ]);
