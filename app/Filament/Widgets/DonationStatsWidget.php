@@ -12,18 +12,39 @@ class DonationStatsWidget extends BaseWidget
 {
     protected function getStats(): array
     {
-        // Count of Donations per type
-        $itemDonations = Donation::where('donation_type', 'item')->count();
-        $cashDonations = Donation::where('donation_type', 'cash')->count();
+        $user = auth()->user();
+        // Count of Donations per type (scope to user if not admin)
+        $itemDonations = Donation::when(!$user?->isAdmin(), fn($q) => $q->where('user_id', $user->id))
+            ->where('donation_type', 'item')
+            ->count();
+        $cashDonations = Donation::when(!$user?->isAdmin(), fn($q) => $q->where('user_id', $user->id))
+            ->where('donation_type', 'cash')
+            ->count();
 
-        // Count of Donations per status
-        $pending = Donation::where('current_status', 'pending')->count();
-        $approved = Donation::where('current_status', 'approved')->count();
-        $rejected = Donation::where('current_status', 'rejected')->count();
-        $completed = Donation::where('current_status', 'completed')->count();
+        // Count of Donations per status (scope to user if not admin)
+        $pending = Donation::when(!$user?->isAdmin(), fn($q) => $q->where('user_id', $user->id))
+            ->where('current_status', 'pending')
+            ->count();
+        $approved = Donation::when(!$user?->isAdmin(), fn($q) => $q->where('user_id', $user->id))
+            ->where('current_status', 'approved')
+            ->count();
+        $rejected = Donation::when(!$user?->isAdmin(), fn($q) => $q->where('user_id', $user->id))
+            ->where('current_status', 'rejected')
+            ->count();
+        $completed = Donation::when(!$user?->isAdmin(), fn($q) => $q->where('user_id', $user->id))
+            ->where('current_status', 'completed')
+            ->count();
 
-        // Count of Donors (users who have made donations)
-        $donors = User::whereHas('donations')->count();
+        // Count of Donors (users who have made donations) — for non-admins show their donations count instead
+        if ($user?->isAdmin()) {
+            $donors = User::whereHas('donations')->count();
+            $donorsLabel = 'Total Donors';
+            $donorsDescription = 'Users who have made donations';
+        } else {
+            $donors = Donation::where('user_id', $user->id)->count();
+            $donorsLabel = 'Your Donations';
+            $donorsDescription = 'Donations you have made';
+        }
 
         // Count of beneficiaries - assuming beneficiaries are users with role 'beneficiary' or something, but from the model, perhaps count users who are not donors or something.
         // The user said "Count of beneficiaries", but in the context, perhaps users who received donations, but donations don't have beneficiary user, only images.
@@ -31,7 +52,15 @@ class DonationStatsWidget extends BaseWidget
         // But to match, perhaps count of users with role 'beneficiary' if exists, but from User model, roles are 'admin', 'user'.
         // Perhaps it's a mistake, or count of donations that have beneficiary_images.
 //        $beneficiaries = Donation::whereNotNull('beneficiary_images')->count(); // assuming each donation with beneficiary_images counts as a beneficiary.
-        $beneficiaries = Beneficiary::count();
+        // Count of beneficiaries (scope to user if not admin)
+        if ($user?->isAdmin()) {
+            $beneficiaries = Beneficiary::count();
+        } else {
+            $beneficiaries = Donation::where('user_id', $user->id)->pluck('beneficiary_id')
+                ->filter()
+                ->unique()
+                ->count();
+        }
         // Count of Donations per address - but donations don't have address, users have address.
         // Perhaps group by user address.
         // But for stats, maybe count unique addresses or something.
@@ -43,7 +72,12 @@ class DonationStatsWidget extends BaseWidget
         // But let's assume it's per status, and perhaps add per type.
 
         // For address, perhaps count of unique addresses.
-        $uniqueAddresses = User::whereHas('donations')->distinct('address')->count('address');
+        // Unique addresses for donors (scope to user if not admin)
+        if ($user?->isAdmin()) {
+            $uniqueAddresses = User::whereHas('donations')->distinct('address')->count('address');
+        } else {
+            $uniqueAddresses = 1; // current user's address (since we're scoping to their donations)
+        }
 
         $stats = [
 
@@ -77,8 +111,8 @@ class DonationStatsWidget extends BaseWidget
                 ->descriptionIcon('heroicon-m-check-badge')
                 ->color('gray'),
 
-            Stat::make('Total Donors', $donors)
-                ->description('Users who have made donations')
+            Stat::make($donorsLabel ?? 'Total Donors', $donors)
+                ->description($donorsDescription ?? 'Users who have made donations')
                 ->descriptionIcon('heroicon-m-users')
                 ->color('primary'),
 

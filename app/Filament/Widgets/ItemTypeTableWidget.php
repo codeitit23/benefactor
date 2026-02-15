@@ -14,9 +14,18 @@ class ItemTypeTableWidget extends BaseWidget
 
     public function table(Table $table): Table
     {
+        $user = auth()->user();
+
+        $query = ItemType::active();
+        if (! $user?->isAdmin()) {
+            $query = $query->whereHas('donations', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            });
+        }
+
         return $table
             ->query(
-                ItemType::active()
+                $query
             )
             ->columns([
                 Tables\Columns\TextColumn::make('name')
@@ -26,7 +35,14 @@ class ItemTypeTableWidget extends BaseWidget
                 Tables\Columns\TextColumn::make('donor_count')
                     ->label('Number of Donors')
                     ->getStateUsing(function (ItemType $record) {
-                        return Donation::where('item_type_id', $record->id)->distinct('user_id')->count('user_id');
+                        $user = auth()->user();
+                        if ($user?->isAdmin()) {
+                            return Donation::where('item_type_id', $record->id)->distinct('user_id')->count('user_id');
+                        }
+
+                        return Donation::where('item_type_id', $record->id)
+                            ->where('user_id', $user->id)
+                            ->count();
                     }),
             ])
             ->defaultSort('name');

@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Filament\Widgets\DonationStatsWidget;
+use App\Filament\Widgets\ItemTypeTableWidget;
 use Filament\Pages\Dashboard as BaseDashboard;
 
 class Dashboard extends BaseDashboard
@@ -15,7 +16,8 @@ class Dashboard extends BaseDashboard
 		public function getWidgets(): array
 		{
 			return [
-				 DonationStatsWidget::class
+				 DonationStatsWidget::class,
+				 ItemTypeTableWidget::class,
 			];
 		}
 
