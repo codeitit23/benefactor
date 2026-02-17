@@ -17,13 +17,13 @@ class ItemSubcategoryResource extends Resource
 {
     protected static ?string $model = ItemSubcategory::class;
 
-    protected static ?string $navigationGroup = 'Donation Settings';
+    protected static ?string $navigationGroup = 'اعدادات التبرعات';
 
-    protected static ?string $navigationLabel = 'Item Subcategories';
+    protected static ?string $navigationLabel = 'الفئات الفرعية للعناصر';
 
-    protected static ?string $modelLabel = 'Item Subcategory';
+    protected static ?string $modelLabel = 'فئة فرعية للعنصر';
 
-    protected static ?string $pluralModelLabel = 'Item Subcategories';
+    protected static ?string $pluralModelLabel = 'الفئات الفرعية للعناصر';
 
     protected static ?int $navigationSort = 3;
 
@@ -40,15 +40,17 @@ class ItemSubcategoryResource extends Resource
             ->schema([
                 Forms\Components\Select::make('item_type_id')
                     ->relationship('itemType', 'name')
+                    ->label('نوع العنصر')
                     ->required()
                     ->searchable(),
 
                 Forms\Components\TextInput::make('name')
+                    ->label('الاسم')
                     ->required()
                     ->maxLength(255),
 
                 Forms\Components\Toggle::make('is_active')
-                    ->label('Active')
+                    ->label('مفعل')
                     ->default(true),
             ]);
     }
@@ -58,24 +60,27 @@ class ItemSubcategoryResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('itemType.name')
-                    ->label('Item Type')
+                    ->label('نوع العنصر')
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('name')
+                    ->label('الاسم')
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean()
-                    ->label('Active'),
+                    ->label('مفعل'),
 
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('تاريخ الانشاء')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('تاريخ التحديث')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -83,30 +88,32 @@ class ItemSubcategoryResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('item_type_id')
                     ->relationship('itemType', 'name')
-                    ->label('Item Type'),
+                    ->label('نوع العنصر'),
                 Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Status')
+                    ->label('الحالة')
                     ->boolean()
-                    ->trueLabel('Active only')
-                    ->falseLabel('Inactive only')
+                    ->trueLabel('المفعل فقط')
+                    ->falseLabel('غير المفعل فقط')
                     ->native(false),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->label('تعديل'),
                 Tables\Actions\Action::make('toggle_active')
-                    ->label(fn ($record) => $record->is_active ? 'Deactivate' : 'Activate')
+                    ->label(fn ($record) => $record->is_active ? 'تعطيل' : 'تفعيل')
                     ->icon(fn ($record) => $record->is_active ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
                     ->color(fn ($record) => $record->is_active ? 'danger' : 'success')
                     ->action(function ($record) {
                         $record->update(['is_active' => !$record->is_active]);
                     })
                     ->requiresConfirmation()
-                    ->modalHeading('Toggle Item Subcategory Status')
-                    ->modalDescription('Are you sure you want to change this item subcategory\'s status?'),
+                    ->modalHeading('تغيير حالة الفئة الفرعية')
+                    ->modalDescription('هل انت متأكد انك تريد تغيير حالة الفئة الفرعية؟'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()
+                        ->label('حذف المحدد')
                         ->requiresConfirmation(),
                 ]),
             ]);

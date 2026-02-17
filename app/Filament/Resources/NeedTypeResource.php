@@ -19,11 +19,11 @@ class NeedTypeResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $navigationGroup = 'Beneficiary Settings';
+    protected static ?string $navigationGroup = 'اعدادات المستفيدين';
 
-    protected static ?string $modelLabel = 'Need Type';
+    protected static ?string $modelLabel = 'نوع الاحتياج';
 
-    protected static ?string $pluralModelLabel = 'Need Types';
+    protected static ?string $pluralModelLabel = 'انواع الاحتياج';
 
        public static function canViewAny(): bool
     {
@@ -35,7 +35,7 @@ class NeedTypeResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
-                    ->label('Name')
+                    ->label('الاسم')
                     ->required()
                     ->maxLength(255),
             ]);
@@ -46,7 +46,7 @@ class NeedTypeResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Name')
+                    ->label('الاسم')
                     ->searchable()
                     ->sortable(),
             ])
@@ -54,11 +54,13 @@ class NeedTypeResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->label('تعديل'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->label('حذف المحدد'),
                 ]),
             ]);
     }

@@ -22,11 +22,11 @@ class DonationResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-heart';
 
-    protected static ?string $navigationLabel = 'Donations';
+    protected static ?string $navigationLabel = 'التبرعات';
 
-    protected static ?string $modelLabel = 'Donation';
+    protected static ?string $modelLabel = 'تبرع';
 
-    protected static ?string $pluralModelLabel = 'Donations';
+    protected static ?string $pluralModelLabel = 'التبرعات';
 
     public static function canViewAny(): bool
     {
@@ -65,13 +65,13 @@ class DonationResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Donation Information')
+                Forms\Components\Section::make('معلومات التبرع')
                     ->schema([
                         Forms\Components\TextInput::make('donation_number')
-                            ->label('Donation Number')
+                            ->label('رقم التبرع')
                             ->disabled()
                             ->dehydrated(false)
-                            ->placeholder('Auto-generated'),
+                            ->placeholder('يتم توليده تلقائيا'),
 
                         Forms\Components\Hidden::make('user_id')
                             ->default(fn () => auth()->id())
@@ -80,7 +80,7 @@ class DonationResource extends Resource
                         Forms\Components\Grid::make(4)
                             ->schema([
                                 Forms\Components\Select::make('donor_id')
-                                    ->label('Donor')
+                                    ->label('المتبرع')
                                     ->options(\App\Models\User::where('active', true)->pluck('name', 'id'))
                                     ->searchable()
                                     ->preload()
@@ -95,8 +95,8 @@ class DonationResource extends Resource
 
                                 Forms\Components\Select::make('donation_type')
                                     ->options([
-                                        'item' => 'Item Donation',
-                                        'cash' => 'Cash Donation',
+                                        'item' => 'تبرع عيني',
+                                        'cash' => 'تبرع نقدي',
                                     ])
                                     ->default('item')
                                     ->live()
@@ -104,7 +104,7 @@ class DonationResource extends Resource
 
 
                                 Forms\Components\Select::make('item_type_id')
-                                    ->label('Type of Item')
+                                    ->label('نوع العنصر')
                                     ->options(\App\Models\ItemType::active()->pluck('name', 'id'))
                                     ->searchable()
                                     ->preload()
@@ -113,7 +113,7 @@ class DonationResource extends Resource
                                     ->visible(fn (Forms\Get $get) => $get('donation_type') === 'item'),
 
                                 Forms\Components\Select::make('item_subcategory_id')
-                                    ->label('Item Subcategory')
+                                    ->label('الفئة الفرعية للعنصر')
                                     ->options(function (callable $get) {
                                         $typeId = $get('item_type_id');
                                         if (!$typeId) return [];
@@ -127,7 +127,7 @@ class DonationResource extends Resource
                                     ->visible(fn (Forms\Get $get) => $get('donation_type') === 'item' && $get('item_type_id')),
 
                                 Forms\Components\Select::make('item_status_id')
-                                    ->label('Status of Item')
+                                    ->label('حالة العنصر')
                                     ->options(\App\Models\ItemStatus::active()->pluck('name', 'id'))
                                     ->searchable()
                                     ->preload()
@@ -137,16 +137,16 @@ class DonationResource extends Resource
                                 // Cash donation fields
                                 Forms\Components\Select::make('payment_method')
                                     ->options([
-                                        'cash' => 'Cash',
-                                        'wish' => 'Wish',
+                                        'cash' => 'نقدا',
+                                        'wish' => 'ويش',
                                         'omt' => 'OMT',
-                                        'credit_card' => 'Credit Card',
+                                        'credit_card' => 'بطاقة ائتمان',
                                     ])
                                     ->required()
                                     ->visible(fn (Forms\Get $get) => $get('donation_type') === 'cash'),
 
                                 Forms\Components\TextInput::make('amount')
-                                    ->label('Amount')
+                                    ->label('المبلغ')
                                     ->numeric()
                                     ->prefix('USD')
                                     ->minValue(0)
@@ -155,10 +155,10 @@ class DonationResource extends Resource
                             ]),
                     ]),
 
-                Forms\Components\Section::make('Item Details')
+                Forms\Components\Section::make('تفاصيل العنصر')
                     ->schema([
                         Forms\Components\FileUpload::make('item_images')
-                            ->label('Item Pictures (Max 5)')
+                            ->label('صور العنصر (حد اقصى 5)')
                             ->multiple()
                             ->maxFiles(5)
                             ->image()
@@ -168,7 +168,7 @@ class DonationResource extends Resource
                             ->visible(fn (Forms\Get $get) => $get('donation_type') === 'item'),
 
                         Forms\Components\FileUpload::make('item_video')
-                            ->label('Item Video')
+                            ->label('فيديو العنصر')
                             ->acceptedFileTypes(['video/mp4', 'video/avi', 'video/mov', 'video/wmv'])
                             ->maxSize(51200) // 50MB
                             ->directory('donations/videos')
@@ -178,24 +178,24 @@ class DonationResource extends Resource
                         Forms\Components\Grid::make(2)
                             ->schema([
                                 Forms\Components\DatePicker::make('pickup_date')
-                                    ->label('Date of Pickup')
+                                    ->label('تاريخ الاستلام')
                                     ->minDate(now())
                                     ->visible(fn (Forms\Get $get) => $get('donation_type') === 'item'),
 
                                 Forms\Components\Textarea::make('notes')
-                                    ->label('Notes')
+                                    ->label('ملاحظات')
                                     ->rows(4)
                                     ->maxLength(1000),
                             ]),
                     ])
                     ->visible(fn (Forms\Get $get) => $get('donation_type') === 'item'),
 
-                Forms\Components\Section::make('Admin Actions')
+                Forms\Components\Section::make('اجراءات المدير')
                     ->schema([
                         Forms\Components\Grid::make(2)
                             ->schema([
                                 Forms\Components\Select::make('beneficiary_id')
-                                    ->label('Relate to Beneficiary')
+                                    ->label('ربط بمستفيد')
                                     ->options(function () {
                                         return \App\Models\Beneficiary::query()
                                             ->pluck('name', 'id');
@@ -214,23 +214,23 @@ class DonationResource extends Resource
 
                                 Forms\Components\Select::make('current_status')
                                     ->options([
-                                        'pending' => 'Pending',
-                                        'approved' => 'Approved',
-                                        'rejected' => 'Rejected',
-                                        'completed' => 'Completed',
+                                        'pending' => 'قيد الانتظار',
+                                        'approved' => 'معتمد',
+                                        'rejected' => 'مرفوض',
+                                        'completed' => 'مكتمل',
                                     ])
                                     ->default('pending')
                                     ->required(),
 
                                 Forms\Components\Textarea::make('status_note')
-                                    ->label('Status Note')
+                                    ->label('ملاحظة الحالة')
                                     ->rows(3)
                                     ->maxLength(1000)
-                                    ->helperText('Add a note explaining the status change, especially for rejections'),
+                                    ->helperText('اضف ملاحظة تشرح تغيير الحالة، خاصة عند الرفض'),
                             ]),
 
                         Forms\Components\FileUpload::make('beneficiary_images')
-                            ->label('Beneficiary Pictures')
+                            ->label('صور المستفيد')
                             ->multiple()
                             ->maxFiles(10)
                             ->image()
@@ -239,7 +239,7 @@ class DonationResource extends Resource
                             ->visibility('public'),
 
                         Forms\Components\FileUpload::make('beneficiary_video')
-                            ->label('Beneficiary Video')
+                            ->label('فيديو المستفيد')
                             ->acceptedFileTypes(['video/mp4', 'video/avi', 'video/mov', 'video/wmv'])
                             ->maxSize(51200) // 50MB
                             ->directory('donations/beneficiary-videos')
@@ -254,45 +254,61 @@ class DonationResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('donation_number')
+                    ->label('رقم التبرع')
                     ->searchable()
                     ->sortable()
                     ->copyable(),
 
                 Tables\Columns\TextColumn::make('user.name')
-                    ->label('Donor')
+                    ->label('المتبرع')
                     ->searchable()
                     ->sortable()
                     ->visible(fn () => auth()->user()?->isAdmin()),
 
                 Tables\Columns\TextColumn::make('beneficiary.name')
-                    ->label('Donated To')
+                    ->label('تم التبرع لـ')
                     ->searchable()
                     ->sortable()
-                    ->placeholder('Not assigned'),
+                    ->placeholder('غير مخصص'),
 
                 Tables\Columns\TextColumn::make('donation_type')
+                    ->label('نوع التبرع')
                     ->badge()
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'cash' => 'تبرع نقدي',
+                        'item' => 'تبرع عيني',
+                        default => $state,
+                    })
                     ->color(fn (string $state): string => match ($state) {
                         'cash' => 'success',
                         'item' => 'info',
                     }),
 
                 Tables\Columns\TextColumn::make('itemType.name')
-                    ->label('Item Type')
+                    ->label('نوع العنصر')
                     ->visible(fn () => auth()->user()?->isAdmin()),
 
                 Tables\Columns\TextColumn::make('itemStatus.name')
-                    ->label('Item Status')
+                    ->label('حالة العنصر')
                     ->badge()
                     ->color(fn ($record) => $record->itemStatus?->color ?? 'gray')
                     ->visible(fn () => auth()->user()?->isAdmin()),
 
                 Tables\Columns\TextColumn::make('amount')
+                    ->label('المبلغ')
                     ->money('USD')
                     ->visible(fn () => auth()->user()?->isAdmin()),
 
                 Tables\Columns\TextColumn::make('current_status')
+                    ->label('الحالة الحالية')
                     ->badge()
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'pending' => 'قيد الانتظار',
+                        'approved' => 'معتمد',
+                        'rejected' => 'مرفوض',
+                        'completed' => 'مكتمل',
+                        default => $state,
+                    })
                     ->color(fn (string $state): string => match ($state) {
                         'pending' => 'warning',
                         'approved' => 'success',
@@ -301,43 +317,48 @@ class DonationResource extends Resource
                     }),
 
                 Tables\Columns\TextColumn::make('pickup_date')
+                    ->label('تاريخ الاستلام')
                     ->date()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('تاريخ الإنشاء')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('beneficiary_id')
-                    ->label('Beneficiary')
+                    ->label('المستفيد')
                     ->relationship('beneficiary', 'name')
                     ->preload()
                     ->searchable(),
 
                 Tables\Filters\SelectFilter::make('donation_type')
                     ->options([
-                        'item' => 'Item Donation',
-                        'cash' => 'Cash Donation',
+                        'item' => 'تبرع عيني',
+                        'cash' => 'تبرع نقدي',
                     ]),
 
                 Tables\Filters\SelectFilter::make('current_status')
                     ->options([
-                        'pending' => 'Pending',
-                        'approved' => 'Approved',
-                        'rejected' => 'Rejected',
-                        'completed' => 'Completed',
+                        'pending' => 'قيد الانتظار',
+                        'approved' => 'معتمد',
+                        'rejected' => 'مرفوض',
+                        'completed' => 'مكتمل',
                     ]),
 
                 Tables\Filters\SelectFilter::make('item_type_id')
-                    ->label('Item Type')
+                    ->label('نوع العنصر')
                     ->options(\App\Models\ItemType::active()->pluck('name', 'id')),
 
                 Tables\Filters\Filter::make('pickup_date')
+                    ->label('تاريخ الاستلام')
                     ->form([
-                        Forms\Components\DatePicker::make('pickup_from'),
-                        Forms\Components\DatePicker::make('pickup_until'),
+                        Forms\Components\DatePicker::make('pickup_from')
+                            ->label('من تاريخ'),
+                        Forms\Components\DatePicker::make('pickup_until')
+                            ->label('إلى تاريخ'),
                     ])
                     ->query(function ($query, array $data): \Illuminate\Database\Eloquent\Builder {
                         return $query
@@ -352,16 +373,18 @@ class DonationResource extends Resource
                     }),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->label('عرض'),
+                Tables\Actions\EditAction::make()
+                    ->label('تعديل'),
                 Tables\Actions\Action::make('relate_beneficiary')
-                    ->label('Relate Beneficiary')
+                    ->label('ربط المستفيد')
                     ->icon('heroicon-o-user-plus')
                     ->color('primary')
                     ->visible(fn () => auth()->user()?->isAdmin())
                     ->form([
                         Forms\Components\Select::make('beneficiary_id')
-                            ->label('Select Beneficiary')
+                            ->label('اختر المستفيد')
                             ->options(function () {
                                 return \App\Models\Beneficiary::query()
                                     ->pluck('name', 'id');
@@ -377,13 +400,13 @@ class DonationResource extends Resource
                             ->searchable()
                             ->preload()
                             ->required()
-                            ->helperText('Search by name or phone number'),
+                            ->helperText('ابحث بالاسم او رقم الهاتف'),
                     ])
                     ->action(function ($record, array $data) {
                         $record->update(['beneficiary_id' => $data['beneficiary_id']]);
                     }),
                 Tables\Actions\Action::make('approve')
-                    ->label('Approve')
+                    ->label('اعتماد')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->visible(fn ($record) => auth()->user()?->isAdmin() && $record->current_status === 'pending')
@@ -393,13 +416,13 @@ class DonationResource extends Resource
                     ->requiresConfirmation(),
 
                 Tables\Actions\Action::make('reject')
-                    ->label('Reject')
+                    ->label('رفض')
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
                     ->visible(fn ($record) => auth()->user()?->isAdmin() && in_array($record->current_status, ['pending', 'approved']))
                     ->form([
                         Forms\Components\Textarea::make('status_note')
-                            ->label('Rejection Reason')
+                            ->label('سبب الرفض')
                             ->required()
                             ->maxLength(1000),
                     ])
@@ -412,7 +435,7 @@ class DonationResource extends Resource
                     ->requiresConfirmation(),
 
                 Tables\Actions\Action::make('complete')
-                    ->label('Mark Complete')
+                    ->label('وضع كمكتمل')
                     ->icon('heroicon-o-check-badge')
                     ->color('gray')
                     ->visible(fn ($record) => auth()->user()?->isAdmin() && $record->current_status === 'approved')
@@ -421,13 +444,15 @@ class DonationResource extends Resource
                     })
                     ->requiresConfirmation(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
-                        ->requiresConfirmation()
-                        ->visible(fn () => auth()->user()?->isAdmin()),
-                ]),
-            ]);
+            // ->bulkActions([
+            //     Tables\Actions\BulkActionGroup::make([
+            //         Tables\Actions\DeleteBulkAction::make()
+            //             ->label('حذف المحدد')
+            //             ->requiresConfirmation()
+            //             ->visible(fn () => auth()->user()?->isAdmin()),
+            //     ]),
+            // ])
+            ;
     }
 
     public static function getRelations(): array

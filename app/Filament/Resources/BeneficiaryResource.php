@@ -22,11 +22,11 @@ class BeneficiaryResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-heart';
 
-    protected static ?string $navigationLabel = 'Beneficiaries';
+    protected static ?string $navigationLabel = 'المستفيدون';
 
-    protected static ?string $modelLabel = 'Beneficiary';
+    protected static ?string $modelLabel = 'مستفيد';
 
-    protected static ?string $pluralModelLabel = 'Beneficiaries';
+    protected static ?string $pluralModelLabel = 'المستفيدون';
 
        public static function canViewAny(): bool
     {
@@ -38,40 +38,40 @@ class BeneficiaryResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
-                    ->label('Name')
+                    ->label('الاسم')
                     ->required()
                     ->maxLength(255),
 
                 Forms\Components\TextInput::make('phone')
-                    ->label('Phone Number')
+                    ->label('رقم الهاتف')
                     ->tel()
                     ->required()
                     ->maxLength(20),
 
                 Forms\Components\TextInput::make('email')
-                    ->label('Email')
+                    ->label('البريد الالكتروني')
                     ->email()
                     ->maxLength(255),
 
                 Forms\Components\Textarea::make('address')
-                    ->label('Address')
+                    ->label('العنوان')
                     ->required()
                     ->maxLength(1000),
 
                 Forms\Components\Select::make('need_types')
-                    ->label('Need Types')
+                    ->label('انواع الاحتياج')
                     ->multiple()
                     ->relationship('needTypes', 'name')
                     ->preload()
                     ->required(),
 
                 Forms\Components\TextInput::make('status')
-                    ->label('Status')
+                    ->label('الحالة')
                     ->required()
                     ->maxLength(255),
 
                 Forms\Components\Select::make('severity_level_id')
-                    ->label('Level of Severity')
+                    ->label('مستوى الشدة')
                     ->options(SeverityLevel::pluck('name', 'id'))
                     ->required(),
             ]);
@@ -82,42 +82,42 @@ class BeneficiaryResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Name')
+                    ->label('الاسم')
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('phone')
-                    ->label('Phone')
+                    ->label('الهاتف')
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('email')
-                    ->label('Email')
+                    ->label('البريد الالكتروني')
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('address')
-                    ->label('Address')
+                    ->label('العنوان')
                     ->limit(50),
 
                 Tables\Columns\TextColumn::make('status')
-                    ->label('Status')
+                    ->label('الحالة')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('severityLevel.name')
-                    ->label('Severity Level')
+                    ->label('مستوى الشدة')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('needTypes.name')
-                    ->label('Need Types')
+                    ->label('انواع الاحتياج')
                     ->listWithLineBreaks(),
 
                 Tables\Columns\TextColumn::make('donations_count')
-                    ->label('Donations Received')
+                    ->label('التبرعات المستلمة')
                     ->counts('donations')
                     ->badge()
                     ->color(fn ($state) => $state > 0 ? 'success' : 'gray'),
 
                 Tables\Columns\IconColumn::make('has_donations')
-                    ->label('Has Donations')
+                    ->label('لديه تبرعات')
                     ->getStateUsing(fn ($record) => $record->donations()->exists())
                     ->boolean()
                     ->trueIcon('heroicon-o-check-circle')
@@ -131,7 +131,7 @@ class BeneficiaryResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('view_donations')
-                    ->label('View Donations')
+                    ->label('عرض التبرعات')
                     ->icon('heroicon-o-eye')
                     ->color('info')
                     ->url(fn ($record) => DonationResource::getUrl('index') . '?tableFilters[beneficiary_id][value]=' . $record->id, shouldOpenInNewTab: true),

@@ -21,7 +21,11 @@ class UserResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
-    protected static ?string $navigationLabel = 'Users';
+    protected static ?string $navigationLabel = 'المستخدمون';
+
+    protected static ?string $modelLabel = 'مستخدم';
+
+    protected static ?string $pluralModelLabel = 'المستخدمون';
 
     public static function canViewAny(): bool
     {
@@ -33,16 +37,19 @@ class UserResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->label('الاسم')
                     ->required()
                     ->maxLength(255),
 
                 Forms\Components\TextInput::make('email')
+                    ->label('البريد الالكتروني')
                     ->email()
                     ->required()
                     ->unique(ignoreRecord: true)
                     ->maxLength(255),
 
                 Forms\Components\TextInput::make('password')
+                    ->label('كلمة المرور')
                     ->password()
                     ->dehydrateStateUsing(fn ($state) => !empty($state) ? bcrypt($state) : null)
                     ->dehydrated(fn ($state) => filled($state))
@@ -51,20 +58,21 @@ class UserResource extends Resource
 
                 Forms\Components\Select::make('role')
                     ->options([
-                        'user' => 'User',
-                        'admin' => 'Admin',
+                        'user' => 'مستخدم',
+                        'admin' => 'مدير',
                     ])
+                    ->label('الدور')
                     ->required()
                     ->default('user'),
 
                 Forms\Components\TextInput::make('phone')
-                    ->label('Phone Number')
+                    ->label('رقم الهاتف')
                     ->tel()
                     ->placeholder('+961 XX XXX XXX')
                     ->maxLength(20),
 
                 Forms\Components\Textarea::make('address')
-                    ->label('Address')
+                    ->label('العنوان')
                     ->rows(3)
                     ->maxLength(500),
             ]);
@@ -75,27 +83,35 @@ class UserResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label('الاسم')
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('email')
+                    ->label('البريد الالكتروني')
                     ->searchable()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('role')
+                    ->label('الدور')
                     ->badge()
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'admin' => 'مدير',
+                        'user' => 'مستخدم',
+                        default => $state,
+                    })
                     ->color(fn (string $state): string => match ($state) {
                         'admin' => 'success',
                         'user' => 'gray',
                     }),
 
                 Tables\Columns\TextColumn::make('phone')
-                    ->label('Phone')
+                    ->label('الهاتف')
                     ->searchable()
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('address')
-                    ->label('Address')
+                    ->label('العنوان')
                     ->limit(50)
                     ->tooltip(function (Tables\Columns\TextColumn $column): ?string {
                         $state = $column->getState();
@@ -107,46 +123,51 @@ class UserResource extends Resource
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('تاريخ الإنشاء')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('تاريخ التحديث')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('role')
+                    ->label('الدور')
                     ->options([
-                        'user' => 'User',
-                        'admin' => 'Admin',
+                        'user' => 'مستخدم',
+                        'admin' => 'مدير',
                     ]),
 
                 Tables\Filters\TernaryFilter::make('active')
-                    ->label('Active Status')
+                    ->label('حالة التفعيل')
                     ->boolean()
-                    ->trueLabel('Active only')
-                    ->falseLabel('Inactive only')
+                    ->trueLabel('المفعل فقط')
+                    ->falseLabel('غير المفعل فقط')
                     ->native(false),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->label('تعديل'),
                 Tables\Actions\Action::make('toggle_active')
-                    ->label(fn ($record) => $record->active ? 'Deactivate' : 'Activate')
+                    ->label(fn ($record) => $record->active ? 'تعطيل' : 'تفعيل')
                     ->icon(fn ($record) => $record->active ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
                     ->color(fn ($record) => $record->active ? 'danger' : 'success')
                     ->action(function ($record) {
                         $record->update(['active' => !$record->active]);
                     })
                     ->requiresConfirmation()
-                    ->modalHeading('Toggle User Status')
-                    ->modalDescription('Are you sure you want to change this user\'s active status?')
-                    ->modalSubmitActionLabel('Yes, change status'),
+                    ->modalHeading('تغيير حالة المستخدم')
+                    ->modalDescription('هل انت متأكد انك تريد تغيير حالة تفعيل هذا المستخدم؟')
+                    ->modalSubmitActionLabel('نعم، غيّر الحالة'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()
+                        ->label('حذف المحدد')
                         ->requiresConfirmation(),
                 ]),
             ]);
