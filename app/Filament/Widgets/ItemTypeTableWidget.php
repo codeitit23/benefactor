@@ -10,7 +10,7 @@ use Filament\Widgets\TableWidget as BaseWidget;
 
 class ItemTypeTableWidget extends BaseWidget
 {
-    protected static ?string $heading = 'Item Types and Donor Counts';
+    protected static ?string $heading = 'انواع العناصر وعدد المتبرعين';
 
     public function table(Table $table): Table
     {
@@ -29,11 +29,11 @@ class ItemTypeTableWidget extends BaseWidget
             )
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Item Type')
+                    ->label('نوع العنصر')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('donor_count')
-                    ->label('Number of Donors')
+                    ->label('عدد المتبرعين')
                     ->getStateUsing(function (ItemType $record) {
                         $user = auth()->user();
                         if ($user?->isAdmin()) {

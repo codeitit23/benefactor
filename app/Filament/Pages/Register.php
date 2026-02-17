@@ -19,12 +19,15 @@ class Register extends BaseRegister
                 $this->getPasswordFormComponent(),
                 $this->getPasswordConfirmationFormComponent(),
                 Forms\Components\TextInput::make('phone')
-                    ->label('Phone Number')
+                    ->label('رقم الهاتف')
                     ->tel()
-                    ->placeholder('+961 XX XXX XXX')
-                    ->maxLength(20),
+                    ->placeholder('مثال: 70123456')
+                    ->required()
+                    ->minLength(8)
+                    ->maxLength(8)
+                    ->rule('regex:/^\\d{8}$/'),
                 Forms\Components\Textarea::make('address')
-                    ->label('Address')
+                    ->label('العنوان')
                     ->rows(3)
                     ->maxLength(500),
             ]);

@@ -68,8 +68,11 @@ class UserResource extends Resource
                 Forms\Components\TextInput::make('phone')
                     ->label('رقم الهاتف')
                     ->tel()
-                    ->placeholder('+961 XX XXX XXX')
-                    ->maxLength(20),
+                    ->placeholder('مثال: 70123456')
+                    ->required()
+                    ->minLength(8)
+                    ->maxLength(8)
+                    ->rule('regex:/^\\d{8}$/'),
 
                 Forms\Components\Textarea::make('address')
                     ->label('العنوان')

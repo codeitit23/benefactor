@@ -38,12 +38,12 @@ class DonationStatsWidget extends BaseWidget
         // Count of Donors (users who have made donations) — for non-admins show their donations count instead
         if ($user?->isAdmin()) {
             $donors = User::whereHas('donations')->count();
-            $donorsLabel = 'Total Donors';
-            $donorsDescription = 'Users who have made donations';
+            $donorsLabel = 'اجمالي المتبرعين';
+            $donorsDescription = 'المستخدمون الذين قدموا تبرعات';
         } else {
             $donors = Donation::where('user_id', $user->id)->count();
-            $donorsLabel = 'Your Donations';
-            $donorsDescription = 'Donations you have made';
+            $donorsLabel = 'تبرعاتك';
+            $donorsDescription = 'التبرعات التي قدمتها';
         }
 
         // Count of beneficiaries - assuming beneficiaries are users with role 'beneficiary' or something, but from the model, perhaps count users who are not donors or something.
@@ -81,48 +81,48 @@ class DonationStatsWidget extends BaseWidget
 
         $stats = [
 
-            Stat::make('Item Donations', $itemDonations)
-                ->description('Total item donations')
+            Stat::make('تبرعات عينية', $itemDonations)
+                ->description('اجمالي التبرعات العينية')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color('success'),
 
-            Stat::make('Cash Donations', $cashDonations)
-                ->description('Total cash donations')
+            Stat::make('تبرعات نقدية', $cashDonations)
+                ->description('اجمالي التبرعات النقدية')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color('info'),
 
-            Stat::make('Pending Donations', $pending)
-                ->description('Donations awaiting approval')
+            Stat::make('تبرعات قيد الانتظار', $pending)
+                ->description('تبرعات بانتظار الاعتماد')
                 ->descriptionIcon('heroicon-m-clock')
                 ->color('warning'),
 
-            Stat::make('Approved Donations', $approved)
-                ->description('Approved donations')
+            Stat::make('تبرعات معتمدة', $approved)
+                ->description('تبرعات تم اعتمادها')
                 ->descriptionIcon('heroicon-m-check-circle')
                 ->color('success'),
 
-            Stat::make('Rejected Donations', $rejected)
-                ->description('Rejected donations')
+            Stat::make('تبرعات مرفوضة', $rejected)
+                ->description('تبرعات تم رفضها')
                 ->descriptionIcon('heroicon-m-x-circle')
                 ->color('danger'),
 
-            Stat::make('Completed Donations', $completed)
-                ->description('Completed donations')
+            Stat::make('تبرعات مكتملة', $completed)
+                ->description('تبرعات مكتملة')
                 ->descriptionIcon('heroicon-m-check-badge')
                 ->color('gray'),
 
-            Stat::make($donorsLabel ?? 'Total Donors', $donors)
-                ->description($donorsDescription ?? 'Users who have made donations')
+            Stat::make($donorsLabel ?? 'اجمالي المتبرعين', $donors)
+                ->description($donorsDescription ?? 'المستخدمون الذين قدموا تبرعات')
                 ->descriptionIcon('heroicon-m-users')
                 ->color('primary'),
 
-            Stat::make('Beneficiaries', $beneficiaries)
-                ->description('Total beneficiaries')
+            Stat::make('المستفيدون', $beneficiaries)
+                ->description('اجمالي المستفيدين')
                 ->descriptionIcon('heroicon-m-heart')
                 ->color('rose'),
 
-            Stat::make('Unique Addresses', $uniqueAddresses)
-                ->description('Unique donor addresses')
+            Stat::make('العناوين الفريدة', $uniqueAddresses)
+                ->description('عناوين المتبرعين الفريدة')
                 ->descriptionIcon('heroicon-m-map-pin')
                 ->color('secondary'),
         ];

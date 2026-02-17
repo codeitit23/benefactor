@@ -46,7 +46,10 @@ class BeneficiaryResource extends Resource
                     ->label('رقم الهاتف')
                     ->tel()
                     ->required()
-                    ->maxLength(20),
+                    ->placeholder('مثال: 70123456')
+                    ->minLength(8)
+                    ->maxLength(8)
+                    ->rule('regex:/^\\d{8}$/'),
 
                 Forms\Components\TextInput::make('email')
                     ->label('البريد الالكتروني')

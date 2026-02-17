@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Str;
 
 class Donation extends Model
 {
@@ -41,7 +40,8 @@ class Donation extends Model
 
         static::creating(function ($donation) {
             if (empty($donation->donation_number)) {
-                $donation->donation_number = 'DON-' . strtoupper(Str::random(8));
+                $nextId = (static::max('id') ?? 0) + 1;
+                $donation->donation_number = 'F_' . $nextId;
             }
         });
     }
