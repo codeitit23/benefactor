@@ -7,38 +7,29 @@
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=cairo:400,500,600,700,800&family=changa:600,700,800&display=swap" rel="stylesheet" />
 
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
-        /* Dark theme only */
-        /* Dark theme with Filament v3 Orange */
         :root {
-            --bg-primary: #030712;
-            --bg-secondary: #111827;
-            --text-primary: #f9fafb;
-            --text-secondary: #d1d5db;
-            --text-muted: #9ca3af;
-            --border-color: #1f2937;
-            --header-bg: #111827;
-            --footer-bg: #111827;
-            --card-bg: #1f2937;
-            --button-secondary-bg: transparent;
-            --button-secondary-border: #374151;
-            --button-secondary-text: #f9fafb;
-            --button-secondary-hover: #1f2937;
-            --social-bg: #1f2937;
-            --social-color: #d1d5db;
-            --social-hover-bg: #f97316; /* Filament v3 Orange */
-            --social-hover-color: #ffffff;
-            --primary-color: #f97316; /* Filament v3 Orange */
-            --primary-hover: #fb923c; /* Lighter orange for hover */
-            --badge-bg: #1f2937;
-            --badge-color: #d1d5db;
-            --link-color: #d1d5db;
-            --link-hover: #f97316; /* Orange for link hover */
+            --bg-0: #0b0f14;
+            --bg-1: #0f1722;
+            --bg-2: #121a26;
+            --text-strong: #f8fafc;
+            --text-soft: #cbd5e1;
+            --text-muted: #94a3b8;
+            --card: rgba(20, 28, 40, 0.75);
+            --card-border: rgba(148, 163, 184, 0.15);
+            --accent: #f59e0b;
+            --accent-2: #22c55e;
+            --accent-3: #0ea5e9;
+            --button-bg: #f59e0b;
+            --button-bg-hover: #fbbf24;
+            --button-ghost: rgba(248, 250, 252, 0.08);
+            --button-ghost-border: rgba(248, 250, 252, 0.2);
+            --shadow: 0 24px 60px rgba(3, 7, 18, 0.55);
         }
 
         * {
@@ -48,78 +39,150 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-primary);
+            font-family: 'Cairo', sans-serif;
+            background: radial-gradient(1200px 600px at 10% 10%, rgba(14, 165, 233, 0.16), transparent 55%),
+                        radial-gradient(900px 600px at 90% 15%, rgba(245, 158, 11, 0.18), transparent 55%),
+                        radial-gradient(1000px 700px at 50% 85%, rgba(34, 197, 94, 0.14), transparent 60%),
+                        linear-gradient(180deg, var(--bg-1), var(--bg-0));
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            color: var(--text-primary);
+            color: var(--text-strong);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before,
+        /*body::after {*/
+        /*    content: "";*/
+        /*    position: absolute;*/
+        /*    inset: -20% -10% auto auto;*/
+        /*    width: 520px;*/
+        /*    height: 520px;*/
+        /*    border-radius: 50%;*/
+        /*    background: radial-gradient(circle, rgba(245, 158, 11, 0.25), transparent 65%);*/
+        /*    filter: blur(30px);*/
+        /*    opacity: 0.7;*/
+        /*    z-index: 0;*/
+        /*    animation: drift 16s ease-in-out infinite;*/
+        /*}*/
+
+        body::after {
+            inset: auto auto -25% -10%;
+            background: radial-gradient(circle, rgba(14, 165, 233, 0.22), transparent 65%);
+            animation-delay: -6s;
+        }
+
+        .page-wrap {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         /* Filament-style Header */
         .filament-header {
-            background: var(--header-bg);
-            border-bottom: 1px solid var(--border-color);
             width: 100%;
+            background: rgba(8, 12, 18, 0.6);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+            backdrop-filter: blur(12px);
         }
 
         .header-content {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 1rem 2rem;
+            padding: 1.25rem 2rem;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
         .logo {
-            font-size: 1.8rem;
+            font-size: 1.9rem;
             font-weight: 700;
-            color: var(--primary-color);
+            color: var(--text-strong);
             display: flex;
             align-items: center;
-            gap: 10px;
-            letter-spacing: -0.025em;
+            gap: 12px;
+            letter-spacing: 0.2px;
         }
 
         .logo i {
-            color: var(--primary-color);
-            font-size: 2rem;
+            color: var(--accent);
+            font-size: 2.1rem;
+            filter: drop-shadow(0 6px 14px rgba(245, 158, 11, 0.4));
         }
 
         /* Filament-style CTA Section */
         .cta-section {
-            max-width: 800px;
+            max-width: 920px;
             margin: 4rem auto;
-            padding: 3rem;
-            background: var(--card-bg);
-            border-radius: 1rem;
+            padding: 3.5rem 3.5rem 3.75rem;
+            background: var(--card);
+            border-radius: 1.5rem;
             text-align: center;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
-            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--card-border);
+            position: relative;
+            overflow: hidden;
             flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            gap: 0.75rem;
+            animation: rise 0.8s ease both;
+        }
+
+        .cta-section::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(400px 180px at 80% 0%, rgba(245, 158, 11, 0.18), transparent 60%),
+                        radial-gradient(400px 200px at 10% 100%, rgba(34, 197, 94, 0.16), transparent 60%);
+            z-index: 0;
+        }
+
+        .cta-section > * {
+            position: relative;
+            z-index: 1;
         }
 
         .cta-title {
-            font-size: 2.5rem;
+            font-family: 'Changa', sans-serif;
+            font-size: 1.7rem;
             font-weight: 700;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-            letter-spacing: -0.025em;
-            line-height: 1.2;
+            margin-bottom: 0.75rem;
+            color: var(--text-strong);
+            letter-spacing: 0.2px;
+            line-height: 1.25;
+        }
+
+        .hero-icon {
+            width: 86px;
+            height: 86px;
+            margin: 0 auto 1rem;
+            border-radius: 28px;
+            display: grid;
+            place-items: center;
+            background: rgba(248, 250, 252, 0.08);
+            border: 1px solid rgba(248, 250, 252, 0.15);
+            box-shadow: 0 18px 30px rgba(15, 23, 42, 0.35);
+        }
+
+        .hero-icon i {
+            font-size: 2.1rem;
+            color: var(--accent);
         }
 
         .cta-description {
-            font-size: 1.125rem;
-            color: var(--text-secondary);
-            margin-bottom: 2.5rem;
-            max-width: 600px;
+            font-size: 1rem;
+            color: var(--text-soft);
+            margin-bottom: 2.25rem;
+            max-width: 620px;
             margin-left: auto;
             margin-right: auto;
-            line-height: 1.6;
+            line-height: 1.8;
         }
 
         .cta-buttons {
@@ -131,51 +194,54 @@
 
         /* Filament-style Buttons */
         .btn {
-            padding: 0.625rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 500;
+            padding: 0.75rem 1.75rem;
+            border-radius: 999px;
+            font-weight: 600;
             font-size: 0.95rem;
             text-decoration: none;
-            transition: all 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.6rem;
             border: 1px solid transparent;
             cursor: pointer;
-            letter-spacing: -0.01em;
+            letter-spacing: 0.2px;
         }
 
         .btn-primary {
-            background: var(--primary-color);
-            color: white;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            background: linear-gradient(135deg, var(--button-bg), var(--button-bg-hover));
+            color: #0b0f14;
+            box-shadow: 0 16px 30px rgba(245, 158, 11, 0.25);
         }
 
         .btn-primary:hover {
-            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 22px 34px rgba(245, 158, 11, 0.32);
         }
 
         .btn-secondary {
-            background: var(--button-secondary-bg);
-            color: var(--button-secondary-text);
-            border-color: var(--button-secondary-border);
+            background: var(--button-ghost);
+            color: var(--text-strong);
+            border-color: var(--button-ghost-border);
+            backdrop-filter: blur(10px);
         }
 
         .btn-secondary:hover {
-            background: var(--button-secondary-hover);
-            border-color: var(--border-color);
+            transform: translateY(-2px);
+            border-color: rgba(248, 250, 252, 0.4);
         }
 
         /* Filament-style Footer */
         .filament-footer {
-            background: var(--footer-bg);
-            border-top: 1px solid var(--border-color);
-            padding: 2rem 2rem 1rem;
+            background: rgba(8, 12, 18, 0.7);
+            border-top: 1px solid rgba(148, 163, 184, 0.12);
+            padding: 2rem 2rem 1.5rem;
             margin-top: auto;
+            backdrop-filter: blur(12px);
         }
 
         .footer-content {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -183,12 +249,12 @@
         }
 
         .footer-section h3 {
-            font-size: 0.875rem;
-            font-weight: 600;
+            font-size: 0.9rem;
+            font-weight: 700;
             margin-bottom: 1rem;
-            color: var(--text-primary);
+            color: var(--text-strong);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.08em;
         }
 
         .footer-section ul {
@@ -197,29 +263,29 @@
 
         .footer-section ul li {
             margin-bottom: 0.5rem;
-            color: var(--text-secondary);
+            color: var(--text-soft);
             font-size: 0.875rem;
         }
 
         .footer-section ul li a {
-            color: var(--link-color);
+            color: var(--text-soft);
             text-decoration: none;
             transition: color 0.2s ease;
             font-size: 0.875rem;
         }
 
         .footer-section ul li a:hover {
-            color: var(--link-hover);
+            color: var(--accent);
         }
 
         .footer-section p {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            line-height: 1.5;
+            color: var(--text-soft);
+            font-size: 0.9rem;
+            line-height: 1.7;
         }
 
         .footer-section i {
-            color: var(--primary-color);
+            color: var(--accent);
         }
 
         .social-links {
@@ -228,31 +294,32 @@
         }
 
         .social-link {
-            width: 32px;
-            height: 32px;
-            background: var(--social-bg);
-            border-radius: 0.375rem;
+            width: 34px;
+            height: 34px;
+            background: rgba(248, 250, 252, 0.08);
+            border-radius: 0.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--social-color);
+            color: var(--text-soft);
             text-decoration: none;
             transition: all 0.2s ease;
-            font-size: 0.875rem;
+            font-size: 0.9rem;
+            border: 1px solid rgba(248, 250, 252, 0.12);
         }
 
         .social-link:hover {
-            background: var(--social-hover-bg);
-            color: var(--social-hover-color);
+            background: var(--accent);
+            color: #0b0f14;
         }
 
         .footer-bottom {
             text-align: center;
             padding-top: 1.5rem;
             margin-top: 1.5rem;
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid rgba(148, 163, 184, 0.12);
             color: var(--text-muted);
-            font-size: 0.875rem;
+            font-size: 0.85rem;
         }
 
         /* Filament-style badge/decoration */
@@ -260,32 +327,61 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            background: var(--badge-bg);
-            color: var(--badge-color);
-            padding: 0.25rem 1rem;
+            background: rgba(248, 250, 252, 0.08);
+            color: var(--text-soft);
+            padding: 0.35rem 1.1rem;
             border-radius: 9999px;
-            font-size: 0.875rem;
-            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+            margin-bottom: 1.25rem;
+            border: 1px solid rgba(248, 250, 252, 0.12);
         }
 
         .filament-badge i {
-            color: var(--primary-color);
+            color: var(--accent-2);
+        }
+
+        @keyframes rise {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes drift {
+            0% {
+                transform: translateY(0) translateX(0);
+            }
+            50% {
+                transform: translateY(20px) translateX(-15px);
+            }
+            100% {
+                transform: translateY(0) translateX(0);
+            }
         }
 
         /* Responsive Design */
         @media (max-width: 768px) {
+            .cta-section {
+                margin: 2.5rem 1rem;
+                padding: 2.5rem 1.75rem;
+            }
+
             .cta-title {
-                font-size: 2rem;
+                font-size: 1.5rem;
             }
 
             .cta-description {
-                font-size: 1rem;
-                padding: 0 1rem;
+                font-size: 0.8rem;
+                padding: 0;
             }
 
             .btn {
-                padding: 0.5rem 1.25rem;
-                font-size: 0.875rem;
+                padding: 0.65rem 1.4rem;
+                font-size: 0.85rem;
             }
 
             .footer-content {
@@ -304,6 +400,7 @@
     </style>
 </head>
 <body>
+<div class="page-wrap">
 <!-- Filament-style Header with just title -->
 <header class="filament-header">
     <div class="header-content">
@@ -318,9 +415,13 @@
 <main style="flex: 1; display: flex; align-items: center; padding: 2rem;">
     <section class="cta-section">
         <!-- Filament badge -->
-        <div class="filament-badge">
-            <i class="fas fa-heart"></i>
-            منصة موثوقة ومعتمدة
+{{--        <div class="filament-badge">--}}
+{{--            <i class="fas fa-heart"></i>--}}
+{{--            منصة موثوقة ومعتمدة--}}
+{{--        </div>--}}
+
+        <div class="hero-icon" aria-hidden="true">
+            <i class="fas fa-hand-holding-heart"></i>
         </div>
 
         <h2 class="cta-title">هل أنت مستعد للمساهمة؟</h2>
@@ -346,7 +447,7 @@
         <div class="footer-section">
             <h3>منصة التبرعات</h3>
             <p>
-                منصة رائدة في مجال العمل الخيري، نسعى لصناعة فرق حقيقي في حياة المحتاجين.
+                منصة رائدة في مجال العمل الخيري.
             </p>
         </div>
 
@@ -360,29 +461,32 @@
 {{--            </ul>--}}
 {{--        </div>--}}
 
-{{--        <div class="footer-section">--}}
-{{--            <h3>تواصل معنا</h3>--}}
-{{--            <ul>--}}
-{{--                <li><i class="fas fa-phone"></i> +966 123 456 789</li>--}}
-{{--                <li><i class="fas fa-envelope"></i> info@donation.com</li>--}}
-{{--                <li><i class="fas fa-map-marker-alt"></i> الرياض، السعودية</li>--}}
-{{--            </ul>--}}
-{{--        </div>--}}
+        <div class="footer-section">
+            <h3>تواصل معنا</h3>
+            <ul>
+                <li><i class="fas fa-phone"></i> +961 ------</li>
+                <li><i class="fas fa-envelope"></i> info@donation.com</li>
+                <li><i class="fas fa-map-marker-alt"></i> لبنان</li>
+            </ul>
+        </div>
 
-{{--        <div class="footer-section">--}}
-{{--            <h3>تابعنا</h3>--}}
-{{--            <div class="social-links">--}}
-{{--                <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>--}}
-{{--                <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>--}}
-{{--                <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>--}}
-{{--                <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>--}}
-{{--            </div>--}}
-{{--        </div>--}}
+        <div class="footer-section">
+            <h3>تابعنا</h3>
+            <div class="social-links">
+                <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+        </div>
     </div>
 
     <div class="footer-bottom">
         <p>&copy; 2026 منصة التبرعات. جميع الحقوق محفوظة.</p>
     </div>
 </footer>
+</div>
 </body>
 </html>
+
+

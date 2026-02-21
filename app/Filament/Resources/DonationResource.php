@@ -41,7 +41,14 @@ class DonationResource extends Resource
     public static function canEdit($record): bool
     {
         $user = auth()->user();
-        return $user->isAdmin() || $record->user_id === $user->id;
+        if ($user->isAdmin()) {
+            return true;
+        }
+
+        $inProgressStatuses = ['pending', 'in_progress'];
+
+        return $record->user_id === $user->id
+            && in_array($record->current_status, $inProgressStatuses, true);
     }
 
     public static function canDelete($record): bool
@@ -75,22 +82,18 @@ class DonationResource extends Resource
 
                         Forms\Components\Hidden::make('user_id')
                             ->default(fn () => auth()->id())
-                            ->required(),
+                            ->required()
+                            ->visible(fn () => !auth()->user()?->isAdmin()),
 
                         Forms\Components\Grid::make(4)
                             ->schema([
-                                Forms\Components\Select::make('donor_id')
+                                Forms\Components\Select::make('user_id')
                                     ->label('المتبرع')
                                     ->options(\App\Models\User::where('active', true)->pluck('name', 'id'))
                                     ->searchable()
                                     ->preload()
                                     ->required(fn () => auth()->user()?->isAdmin())
                                     ->visible(fn () => auth()->user()?->isAdmin())
-                                    ->afterStateUpdated(function ($state, Forms\Set $set) {
-                                        if (auth()->user()?->isAdmin()) {
-                                            $set('user_id', $state);
-                                        }
-                                    })
                                     ->default(fn () => auth()->user()?->isAdmin() ? null : auth()->id()),
 
                                 Forms\Components\Select::make('donation_type')
@@ -376,7 +379,9 @@ class DonationResource extends Resource
                 Tables\Actions\ViewAction::make()
                     ->label('عرض'),
                 Tables\Actions\EditAction::make()
-                    ->label('تعديل'),
+                    ->label('تعديل')
+                    ->visible(fn ($record) => auth()->user()?->isAdmin()
+                        || in_array($record->current_status, ['pending', 'in_progress'], true)),
                 Tables\Actions\Action::make('relate_beneficiary')
                     ->label('ربط المستفيد')
                     ->icon('heroicon-o-user-plus')
@@ -471,3 +476,4 @@ class DonationResource extends Resource
         ];
     }
 }
+
