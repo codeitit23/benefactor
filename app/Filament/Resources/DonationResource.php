@@ -268,11 +268,24 @@ class DonationResource extends Resource
                     ->sortable()
                     ->visible(fn () => auth()->user()?->isAdmin()),
 
+                Tables\Columns\TextColumn::make('user.phone')
+                    ->label('هاتف المتبرع')
+                    ->searchable()
+                    // ->toggleable(isToggledHiddenByDefault: false)
+                    ->visible(fn () => auth()->user()?->isAdmin()),
+
                 Tables\Columns\TextColumn::make('beneficiary.name')
                     ->label('تم التبرع لـ')
                     ->searchable()
                     ->sortable()
                     ->placeholder('غير مخصص'),
+
+                Tables\Columns\TextColumn::make('beneficiary.phone')
+                    ->label('هاتف المستفيد')
+                    ->searchable()
+                    // ->toggleable(isToggledHiddenByDefault: true)
+                    ->placeholder('غير مخصص')
+                    ->visible(fn () => auth()->user()?->isAdmin()),
 
                 Tables\Columns\TextColumn::make('donation_type')
                     ->label('نوع التبرع')
@@ -331,6 +344,77 @@ class DonationResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                Tables\Filters\Filter::make('donor_phone')
+                    ->label('هاتف المتبرع')
+                    ->form([
+                        Forms\Components\TextInput::make('phone')
+                            ->label('هاتف المتبرع')
+                            ->placeholder('ابحث برقم الهاتف'),
+                    ])
+                    ->query(function ($query, array $data): \Illuminate\Database\Eloquent\Builder {
+                        return $query->when(
+                            $data['phone'] ?? null,
+                            fn ($query, $phone): \Illuminate\Database\Eloquent\Builder => $query->whereHas(
+                                'user',
+                                fn ($q) => $q->where('phone', 'like', "%{$phone}%")
+                            )
+                        );
+                    })
+                    ->visible(fn () => auth()->user()?->isAdmin()),
+
+                Tables\Filters\Filter::make('beneficiary_phone')
+                    ->label('هاتف المستفيد')
+                    ->form([
+                        Forms\Components\TextInput::make('phone')
+                            ->label('هاتف المستفيد')
+                            ->placeholder('ابحث برقم الهاتف'),
+                    ])
+                    ->query(function ($query, array $data): \Illuminate\Database\Eloquent\Builder {
+                        return $query->when(
+                            $data['phone'] ?? null,
+                            fn ($query, $phone): \Illuminate\Database\Eloquent\Builder => $query->whereHas(
+                                'beneficiary',
+                                fn ($q) => $q->where('phone', 'like', "%{$phone}%")
+                            )
+                        );
+                    })
+                    ->visible(fn () => auth()->user()?->isAdmin()),
+                Tables\Filters\Filter::make('donor_phone')
+                    ->label('هاتف المتبرع')
+                    ->form([
+                        Forms\Components\TextInput::make('phone')
+                            ->label('هاتف المتبرع')
+                            ->placeholder('هاتف المتبرع'),
+                    ])
+                    ->query(function ($query, array $data): \Illuminate\Database\Eloquent\Builder {
+                        return $query->when(
+                            $data['phone'] ?? null,
+                            fn ($query, $phone): \Illuminate\Database\Eloquent\Builder => $query->whereHas(
+                                'user',
+                                fn ($q) => $q->where('phone', 'like', "%{$phone}%")
+                            )
+                        );
+                    })
+                    ->visible(fn () => auth()->user()?->isAdmin()),
+
+                Tables\Filters\Filter::make('beneficiary_phone')
+                    ->label('هاتف المستفيد')
+                    ->form([
+                        Forms\Components\TextInput::make('phone')
+                            ->label('هاتف المستفيد')
+                            ->placeholder('هاتف المستفيد'),
+                    ])
+                    ->query(function ($query, array $data): \Illuminate\Database\Eloquent\Builder {
+                        return $query->when(
+                            $data['phone'] ?? null,
+                            fn ($query, $phone): \Illuminate\Database\Eloquent\Builder => $query->whereHas(
+                                'beneficiary',
+                                fn ($q) => $q->where('phone', 'like', "%{$phone}%")
+                            )
+                        );
+                    })
+                    ->visible(fn () => auth()->user()?->isAdmin()),
+
                 Tables\Filters\SelectFilter::make('beneficiary_id')
                     ->label('المستفيد')
                     ->relationship('beneficiary', 'name')
@@ -476,4 +560,5 @@ class DonationResource extends Resource
         ];
     }
 }
+
 
