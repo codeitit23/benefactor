@@ -429,6 +429,10 @@
             تبرعك البسيط يمكن أن يغير حياة شخص ما. انضم إلى آلاف المتبرعين وكن جزءاً من التغيير الإيجابي في مجتمعنا.
         </p>
         <div class="cta-buttons">
+            <a href="{{ url('/donate') }}" class="btn btn-primary">
+                <i class="fas fa-heart"></i>
+                تبرع بدون تسجيل
+            </a>
             <a href="{{ url('/admin/login') }}" class="btn btn-primary">
                 <i class="fas fa-sign-in-alt"></i>
                 تسجيل الدخول
@@ -488,5 +492,4 @@
 </div>
 </body>
 </html>
-
 

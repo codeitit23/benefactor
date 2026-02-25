@@ -10,6 +10,9 @@ class Donation extends Model
     protected $fillable = [
         'donation_number',
         'user_id',
+        'donor_name',
+        'donor_phone',
+        'donor_address',
         'donation_type',
         'item_type_id',
         'item_subcategory_id',
@@ -44,6 +47,33 @@ class Donation extends Model
                 $donation->donation_number = 'F_' . $nextId;
             }
         });
+    }
+
+    public function getDonorNameAttribute($value): ?string
+    {
+        if (!empty($value)) {
+            return $value;
+        }
+
+        return $this->user?->name;
+    }
+
+    public function getDonorPhoneAttribute($value): ?string
+    {
+        if (!empty($value)) {
+            return $value;
+        }
+
+        return $this->user?->phone;
+    }
+
+    public function getDonorAddressAttribute($value): ?string
+    {
+        if (!empty($value)) {
+            return $value;
+        }
+
+        return $this->user?->address;
     }
 
     public function user(): BelongsTo

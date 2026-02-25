@@ -92,7 +92,9 @@ class DonationResource extends Resource
                                     ->options(\App\Models\User::where('active', true)->pluck('name', 'id'))
                                     ->searchable()
                                     ->preload()
-                                    ->required(fn () => auth()->user()?->isAdmin())
+                                    ->required(fn () => !auth()->user()?->isAdmin())
+                                    ->nullable()
+                                    ->helperText('Ø§ØªØ±ÙƒÙ‡ ÙØ§Ø±ØºØ§ Ù„Ù„ØªØ¨Ø±Ø¹ ÙƒØ¶ÙŠÙ')
                                     ->visible(fn () => auth()->user()?->isAdmin())
                                     ->default(fn () => auth()->user()?->isAdmin() ? null : auth()->id()),
 
@@ -155,6 +157,30 @@ class DonationResource extends Resource
                                     ->minValue(0)
                                     ->required()
                                     ->visible(fn (Forms\Get $get) => $get('donation_type') === 'cash'),
+                            ]),
+
+                        Forms\Components\Grid::make(3)
+                            ->schema([
+                                Forms\Components\TextInput::make('donor_name')
+                                    ->label('اسم المتبرع')
+                                    ->maxLength(255)
+                                    ->required(fn (Forms\Get $get) => blank($get('user_id')))
+                                    ->visible(fn (Forms\Get $get) => blank($get('user_id')) || auth()->user()?->isAdmin()),
+
+                                Forms\Components\TextInput::make('donor_phone')
+                                    ->label('هاتف المتبرع')
+                                    ->maxLength(50)
+                                    ->rule('regex:/^\d{8}$/')
+                                    ->helperText('رقم مكون من 8 أرقام')
+                                    ->required(fn (Forms\Get $get) => blank($get('user_id')))
+                                    ->visible(fn (Forms\Get $get) => blank($get('user_id')) || auth()->user()?->isAdmin()),
+
+                                Forms\Components\Textarea::make('donor_address')
+                                    ->label('عنوان المتبرع')
+                                    ->rows(2)
+                                    ->maxLength(255)
+                                    ->required(fn (Forms\Get $get) => blank($get('user_id')))
+                                    ->visible(fn (Forms\Get $get) => blank($get('user_id')) || auth()->user()?->isAdmin()),
                             ]),
                     ]),
 
@@ -262,16 +288,20 @@ class DonationResource extends Resource
                     ->sortable()
                     ->copyable(),
 
-                Tables\Columns\TextColumn::make('user.name')
+                Tables\Columns\TextColumn::make('donor_name')
                     ->label('المتبرع')
+                    ->getStateUsing(fn ($record) => $record->donor_name ?? $record->user?->name)
                     ->searchable()
                     ->sortable()
+                    ->placeholder('ضيف')
                     ->visible(fn () => auth()->user()?->isAdmin()),
 
-                Tables\Columns\TextColumn::make('user.phone')
+                Tables\Columns\TextColumn::make('donor_phone')
                     ->label('هاتف المتبرع')
+                    ->getStateUsing(fn ($record) => $record->donor_phone ?? $record->user?->phone)
                     ->searchable()
                     // ->toggleable(isToggledHiddenByDefault: false)
+                    ->placeholder('غير متوفر')
                     ->visible(fn () => auth()->user()?->isAdmin()),
 
                 Tables\Columns\TextColumn::make('beneficiary.name')
@@ -560,5 +590,7 @@ class DonationResource extends Resource
         ];
     }
 }
+
+
 
 
