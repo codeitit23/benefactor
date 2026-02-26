@@ -94,11 +94,12 @@ class DonationResource extends Resource
                                     ->preload()
                                     ->required(fn () => !auth()->user()?->isAdmin())
                                     ->nullable()
-                                    ->helperText('Ø§ØªØ±ÙƒÙ‡ ÙØ§Ø±ØºØ§ Ù„Ù„ØªØ¨Ø±Ø¹ ÙƒØ¶ÙŠÙ')
+//                                    ->helperText('Ø§ØªØ±ÙƒÙ‡ ÙØ§Ø±ØºØ§ Ù„Ù„ØªØ¨Ø±Ø¹ ÙƒØ¶ÙŠÙ')
                                     ->visible(fn () => auth()->user()?->isAdmin())
                                     ->default(fn () => auth()->user()?->isAdmin() ? null : auth()->id()),
 
                                 Forms\Components\Select::make('donation_type')
+                                    ->label('نوع التبرع')
                                     ->options([
                                         'item' => 'تبرع عيني',
                                         'cash' => 'تبرع نقدي',
