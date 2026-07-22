@@ -39,7 +39,8 @@ class UserResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->label('الاسم')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->default(fn () => request()->query('name')),
 
                 Forms\Components\TextInput::make('email')
                     ->label('البريد الالكتروني')
@@ -72,12 +73,14 @@ class UserResource extends Resource
                     ->required()
                     ->minLength(8)
                     ->maxLength(8)
-                    ->rule('regex:/^\\d{8}$/'),
+                    ->rule('regex:/^\\d{8}$/')
+                    ->default(fn () => request()->query('phone')),
 
                 Forms\Components\Textarea::make('address')
                     ->label('العنوان')
                     ->rows(3)
-                    ->maxLength(500),
+                    ->maxLength(500)
+                    ->default(fn () => request()->query('address')),
             ]);
     }
 

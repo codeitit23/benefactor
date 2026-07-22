@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\DonationResource\Pages;
 use App\Filament\Resources\DonationResource\RelationManagers;
+use App\Filament\Resources\UserResource;
 use App\Models\Donation;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -372,7 +373,7 @@ class DonationResource extends Resource
                     ->label('تاريخ الإنشاء')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
             ])
             ->filters([
                 Tables\Filters\Filter::make('donor_phone')
@@ -525,6 +526,17 @@ class DonationResource extends Resource
                     ->action(function ($record, array $data) {
                         $record->update(['beneficiary_id' => $data['beneficiary_id']]);
                     }),
+                Tables\Actions\Action::make('create_user')
+                    ->label('إضافة مستخدم')
+                    ->icon('heroicon-o-user-plus')
+                    ->color('warning')
+                    ->visible(fn ($record) => auth()->user()?->isAdmin() && blank($record->user_id))
+                    ->url(fn ($record) => UserResource::getUrl('create', [
+                        'donation_id' => $record->id,
+                        'name' => $record->donor_name,
+                        'phone' => $record->donor_phone,
+                        'address' => $record->donor_address,
+                    ])),
                 Tables\Actions\Action::make('approve')
                     ->label('اعتماد')
                     ->icon('heroicon-o-check-circle')
@@ -591,7 +603,5 @@ class DonationResource extends Resource
         ];
     }
 }
-
-
 
 
