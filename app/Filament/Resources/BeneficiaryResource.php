@@ -129,7 +129,113 @@ class BeneficiaryResource extends Resource
                     ->falseColor('danger'),
             ])
             ->filters([
-                //
+                Tables\Filters\Filter::make('name')
+                    ->label('الاسم')
+                    ->form([
+                        Forms\Components\TextInput::make('value')
+                            ->label('الاسم'),
+                    ])
+                    ->query(fn (Builder $query, array $data): Builder => $query->when(
+                        $data['value'] ?? null,
+                        fn (Builder $query, string $value): Builder => $query->where('name', 'like', "%{$value}%")
+                    )),
+
+                Tables\Filters\Filter::make('phone')
+                    ->label('الهاتف')
+                    ->form([
+                        Forms\Components\TextInput::make('value')
+                            ->label('الهاتف'),
+                    ])
+                    ->query(fn (Builder $query, array $data): Builder => $query->when(
+                        $data['value'] ?? null,
+                        fn (Builder $query, string $value): Builder => $query->where('phone', 'like', "%{$value}%")
+                    )),
+
+                Tables\Filters\Filter::make('email')
+                    ->label('البريد الالكتروني')
+                    ->form([
+                        Forms\Components\TextInput::make('value')
+                            ->label('البريد الالكتروني'),
+                    ])
+                    ->query(fn (Builder $query, array $data): Builder => $query->when(
+                        $data['value'] ?? null,
+                        fn (Builder $query, string $value): Builder => $query->where('email', 'like', "%{$value}%")
+                    )),
+
+                Tables\Filters\Filter::make('address')
+                    ->label('العنوان')
+                    ->form([
+                        Forms\Components\TextInput::make('value')
+                            ->label('العنوان'),
+                    ])
+                    ->query(fn (Builder $query, array $data): Builder => $query->when(
+                        $data['value'] ?? null,
+                        fn (Builder $query, string $value): Builder => $query->where('address', 'like', "%{$value}%")
+                    )),
+
+                Tables\Filters\Filter::make('status')
+                    ->label('الحالة')
+                    ->form([
+                        Forms\Components\TextInput::make('value')
+                            ->label('الحالة'),
+                    ])
+                    ->query(fn (Builder $query, array $data): Builder => $query->when(
+                        $data['value'] ?? null,
+                        fn (Builder $query, string $value): Builder => $query->where('status', 'like', "%{$value}%")
+                    )),
+
+                Tables\Filters\SelectFilter::make('severity_level_id')
+                    ->label('مستوى الشدة')
+                    ->relationship('severityLevel', 'name')
+                    ->searchable()
+                    ->preload(),
+
+                Tables\Filters\SelectFilter::make('need_types')
+                    ->label('انواع الاحتياج')
+                    ->relationship('needTypes', 'name')
+                    ->searchable()
+                    ->preload(),
+
+                Tables\Filters\Filter::make('donations_count')
+                    ->label('عدد التبرعات')
+                    ->form([
+                        Forms\Components\TextInput::make('min')
+                            ->label('الحد الادنى')
+                            ->numeric()
+                            ->minValue(0),
+                        Forms\Components\TextInput::make('max')
+                            ->label('الحد الاقصى')
+                            ->numeric()
+                            ->minValue(0),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        $min = $data['min'] ?? null;
+                        $max = $data['max'] ?? null;
+
+                        if (blank($min) && blank($max)) {
+                            return $query;
+                        }
+
+                        $query->withCount('donations');
+
+                        if (filled($min)) {
+                            $query->having('donations_count', '>=', (int) $min);
+                        }
+
+                        if (filled($max)) {
+                            $query->having('donations_count', '<=', (int) $max);
+                        }
+
+                        return $query;
+                    }),
+
+                Tables\Filters\TernaryFilter::make('has_donations')
+                    ->label('لديه تبرعات')
+                    ->queries(
+                        true: fn (Builder $query) => $query->has('donations'),
+                        false: fn (Builder $query) => $query->doesntHave('donations'),
+                        blank: fn (Builder $query) => $query,
+                    ),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

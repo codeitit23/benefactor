@@ -141,6 +141,28 @@ class UserResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                Tables\Filters\Filter::make('name')
+                    ->label('الاسم')
+                    ->form([
+                        Forms\Components\TextInput::make('value')
+                            ->label('الاسم'),
+                    ])
+                    ->query(fn (Builder $query, array $data): Builder => $query->when(
+                        $data['value'] ?? null,
+                        fn (Builder $query, string $value): Builder => $query->where('name', 'like', "%{$value}%")
+                    )),
+
+                Tables\Filters\Filter::make('email')
+                    ->label('البريد الالكتروني')
+                    ->form([
+                        Forms\Components\TextInput::make('value')
+                            ->label('البريد الالكتروني'),
+                    ])
+                    ->query(fn (Builder $query, array $data): Builder => $query->when(
+                        $data['value'] ?? null,
+                        fn (Builder $query, string $value): Builder => $query->where('email', 'like', "%{$value}%")
+                    )),
+
                 Tables\Filters\SelectFilter::make('role')
                     ->label('الدور')
                     ->options([
@@ -148,6 +170,29 @@ class UserResource extends Resource
                         'admin' => 'مدير',
                     ]),
 
+                Tables\Filters\Filter::make('phone')
+                    ->label('الهاتف')
+                    ->form([
+                        Forms\Components\TextInput::make('value')
+                            ->label('الهاتف'),
+                    ])
+                    ->query(fn (Builder $query, array $data): Builder => $query->when(
+                        $data['value'] ?? null,
+                        fn (Builder $query, string $value): Builder => $query->where('phone', 'like', "%{$value}%")
+                    )),
+
+                Tables\Filters\Filter::make('address')
+                    ->label('العنوان')
+                    ->form([
+                        Forms\Components\TextInput::make('value')
+                            ->label('العنوان'),
+                    ])
+                    ->query(fn (Builder $query, array $data): Builder => $query->when(
+                        $data['value'] ?? null,
+                        fn (Builder $query, string $value): Builder => $query->where('address', 'like', "%{$value}%")
+                    )),
+
+        
                 Tables\Filters\TernaryFilter::make('active')
                     ->label('حالة التفعيل')
                     ->boolean()
