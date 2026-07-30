@@ -200,7 +200,7 @@ class DonationResource extends Resource
 
                         Forms\Components\FileUpload::make('item_video')
                             ->label('فيديو العنصر')
-                            ->acceptedFileTypes(['video/mp4', 'video/avi', 'video/mov', 'video/wmv'])
+                            ->acceptedFileTypes(['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/x-ms-wmv'])
                             ->maxSize(51200) // 50MB
                             ->directory('donations/videos')
                             ->visibility('public')
@@ -241,7 +241,8 @@ class DonationResource extends Resource
                                     ->getOptionLabelUsing(fn ($value) => \App\Models\Beneficiary::find($value)?->name)
                                     ->searchable()
                                     ->preload()
-                                    ->nullable(),
+                                    ->nullable()
+                                    ->visible(fn () => auth()->user()?->isAdmin()),
 
                                 Forms\Components\Select::make('current_status')
                                     ->options([
@@ -271,12 +272,11 @@ class DonationResource extends Resource
 
                         Forms\Components\FileUpload::make('beneficiary_video')
                             ->label('فيديو المستفيد')
-                            ->acceptedFileTypes(['video/mp4', 'video/avi', 'video/mov', 'video/wmv'])
+                            ->acceptedFileTypes(['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/x-ms-wmv'])
                             ->maxSize(51200) // 50MB
                             ->directory('donations/beneficiary-videos')
                             ->visibility('public'),
-                    ])
-                    ->visible(fn () => auth()->user()?->isAdmin()),
+                        ]),
             ]);
     }
 
