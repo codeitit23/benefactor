@@ -435,8 +435,8 @@
     </style>
 </head>
 @php
-    $logoUrl = !empty($homepageSetting?->logo_path) ? asset('storage/' . $homepageSetting->logo_path) : null;
-    $coverUrl = !empty($homepageSetting?->cover_path) ? asset('storage/' . $homepageSetting->cover_path) : null;
+    $logoUrl = !empty($homepageSetting?->logo_path) ? Storage::disk('public')->url($homepageSetting->logo_path) : null;
+    $coverUrl = !empty($homepageSetting?->cover_path) ? Storage::disk('public')->url($homepageSetting->cover_path) : null;
 @endphp
 <body>
 @if ($coverUrl)
