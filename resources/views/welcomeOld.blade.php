@@ -52,18 +52,6 @@
             overflow-x: hidden;
         }
 
-        .cover-photo {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            background-position: center;
-            background-size: cover;
-            background-repeat: no-repeat;
-            opacity: 0.9;
-            filter: saturate(0.85) contrast(1.05);
-            pointer-events: none;
-        }
-
         body::before,
         /*body::after {*/
         /*    content: "";*/
@@ -126,16 +114,6 @@
             filter: drop-shadow(0 6px 14px rgba(245, 158, 11, 0.4));
         }
 
-        .logo-image {
-            height: 52px;
-            width: auto;
-            object-fit: contain;
-            border-radius: 0.65rem;
-            border: 1px solid rgba(248, 250, 252, 0.2);
-            background: rgba(255, 255, 255, 0.08);
-            padding: 0.2rem;
-        }
-
         /* Filament-style CTA Section */
         .cta-section {
             max-width: 920px;
@@ -195,15 +173,6 @@
         .hero-icon i {
             font-size: 2.1rem;
             color: var(--accent);
-        }
-
-        .hero-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
-            border-radius: inherit;
-            display: block;
         }
 
         .cta-description {
@@ -427,27 +396,17 @@
             .logo {
                 font-size: 1.5rem;
             }
-
-            .logo-image {
-                height: 42px;
-            }
         }
     </style>
 </head>
-@php
-    $logoUrl = !empty($homepageSetting?->logo_path) ? asset('storage/' . $homepageSetting->logo_path) : null;
-    $coverUrl = !empty($homepageSetting?->cover_path) ? asset('storage/' . $homepageSetting->cover_path) : null;
-@endphp
 <body>
-@if ($coverUrl)
-    <div class="cover-photo" style="background-image: url('{{ $coverUrl }}');"></div>
-@endif
 <div class="page-wrap">
 <!-- Filament-style Header with just title -->
 <header class="filament-header">
     <div class="header-content">
         <div class="logo">
-            <span>منصة التبرعات</span>
+            <i class="fas fa-hand-holding-heart"></i>
+            منصة التبرعات
         </div>
     </div>
 </header>
@@ -462,11 +421,7 @@
 {{--        </div>--}}
 
         <div class="hero-icon" aria-hidden="true">
-            @if ($logoUrl)
-                <img src="{{ $logoUrl }}" alt="">
-            @else
-                <i class="fas fa-hand-holding-heart"></i>
-            @endif
+            <i class="fas fa-hand-holding-heart"></i>
         </div>
 
         <h2 class="cta-title">هل أنت مستعد للمساهمة؟</h2>

@@ -222,6 +222,7 @@ class DonationResource extends Resource
                     ->visible(fn (Forms\Get $get) => $get('donation_type') === 'item'),
 
                 Forms\Components\Section::make('اجراءات المدير')
+                    ->visible(fn (string $operation): bool => auth()->user()?->isAdmin() || $operation === 'view')
                     ->schema([
                         Forms\Components\Grid::make(2)
                             ->schema([
