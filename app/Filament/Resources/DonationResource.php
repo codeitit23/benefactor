@@ -311,7 +311,8 @@ class DonationResource extends Resource
                     ->label('تم التبرع لـ')
                     ->searchable()
                     ->sortable()
-                    ->placeholder('غير مخصص'),
+                    ->placeholder('غير مخصص')
+                    ->visible(fn () => auth()->user()?->isAdmin()),
 
                 Tables\Columns\TextColumn::make('beneficiary.phone')
                     ->label('هاتف المستفيد')
