@@ -338,6 +338,10 @@ class DonationResource extends Resource
                     ->label('نوع العنصر')
                     ->visible(fn () => auth()->user()?->isAdmin()),
 
+                Tables\Columns\TextColumn::make('itemSubcategory.name')
+                    ->label('الفئة الفرعية للعنصر')
+                    ->visible(fn () => auth()->user()?->isAdmin()),
+
                 Tables\Columns\TextColumn::make('itemStatus.name')
                     ->label('حالة العنصر')
                     ->badge()

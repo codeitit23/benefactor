@@ -86,6 +86,11 @@ class Donation extends Model
         return $this->belongsTo(ItemType::class);
     }
 
+    public function itemSubcategory(): BelongsTo
+    {
+        return $this->belongsTo(ItemSubcategory::class);
+    }
+
     public function itemStatus(): BelongsTo
     {
         return $this->belongsTo(ItemStatus::class);
