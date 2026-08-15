@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
+use App\Mail\AdminDonationCreated;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class Donation extends Model
 {
@@ -45,6 +48,30 @@ class Donation extends Model
             if (empty($donation->donation_number)) {
                 $nextId = (static::max('id') ?? 0) + 1;
                 $donation->donation_number = 'F_' . $nextId;
+            }
+        });
+
+        static::created(function (self $donation): void {
+            try {
+                $adminEmails = User::query()
+                    ->where('role', 'admin')
+                    ->whereNotNull('email')
+                    ->pluck('email')
+                    ->filter()
+                    ->unique()
+                    ->values()
+                    ->all();
+
+                if (empty($adminEmails)) {
+                    return;
+                }
+
+                Mail::to($adminEmails)->send(new AdminDonationCreated($donation));
+            } catch (\Throwable $exception) {
+                Log::error('Failed to send admin donation notification email.', [
+                    'donation_id' => $donation->id,
+                    'error' => $exception->getMessage(),
+                ]);
             }
         });
     }

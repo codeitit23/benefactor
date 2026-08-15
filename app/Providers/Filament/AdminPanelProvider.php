@@ -33,6 +33,8 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->brandName('')
+            ->maxContentWidth('full')
             ->login(Login::class)
             ->registration(Register::class)
             ->colors([

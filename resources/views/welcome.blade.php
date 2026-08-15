@@ -447,7 +447,7 @@
 <header class="filament-header">
     <div class="header-content">
         <div class="logo">
-            <span>منصة التبرعات</span>
+            <span>منصة فاعل خير</span>
         </div>
     </div>
 </header>

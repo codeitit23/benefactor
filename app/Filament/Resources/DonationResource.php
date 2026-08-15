@@ -340,13 +340,15 @@ class DonationResource extends Resource
 
                 Tables\Columns\TextColumn::make('itemSubcategory.name')
                     ->label('الفئة الفرعية للعنصر')
-                    ->visible(fn () => auth()->user()?->isAdmin()),
+                    // ->visible(fn () => auth()->user()?->isAdmin())
+                    ,
 
                 Tables\Columns\TextColumn::make('itemStatus.name')
                     ->label('حالة العنصر')
                     ->badge()
                     ->color(fn ($record) => $record->itemStatus?->color ?? 'gray')
-                    ->visible(fn () => auth()->user()?->isAdmin()),
+                    // ->visible(fn () => auth()->user()?->isAdmin())
+                    ,
 
                 Tables\Columns\TextColumn::make('amount')
                     ->label('المبلغ')
@@ -463,7 +465,8 @@ class DonationResource extends Resource
                     ->options([
                         'item' => 'تبرع عيني',
                         'cash' => 'تبرع نقدي',
-                    ]),
+                    ])
+                    ->label('نوع التبرع'),
 
                 Tables\Filters\SelectFilter::make('current_status')
                     ->options([
@@ -471,7 +474,8 @@ class DonationResource extends Resource
                         'approved' => 'معتمد',
                         'rejected' => 'مرفوض',
                         'completed' => 'مكتمل',
-                    ]),
+                    ])
+                    ->label('الحالة الحالية'),
 
                 Tables\Filters\SelectFilter::make('item_type_id')
                     ->label('نوع العنصر')
