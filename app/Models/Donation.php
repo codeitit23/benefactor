@@ -57,16 +57,34 @@ class Donation extends Model
                     ->where('role', 'admin')
                     ->whereNotNull('email')
                     ->pluck('email')
-                    ->filter()
+                    ->filter(fn ($email) => is_string($email) && filter_var($email, FILTER_VALIDATE_EMAIL))
                     ->unique()
                     ->values()
                     ->all();
 
+                $fallbackEmail = env('ADMIN_NOTIFICATION_EMAIL');
+                if (is_string($fallbackEmail) && filter_var($fallbackEmail, FILTER_VALIDATE_EMAIL)) {
+                    $adminEmails[] = $fallbackEmail;
+                }
+
+                $adminEmails = array_values(array_unique($adminEmails));
+
                 if (empty($adminEmails)) {
+                    Log::warning('No admin notification email recipients found for donation.', [
+                        'donation_id' => $donation->id,
+                    ]);
+
                     return;
                 }
 
-                Mail::to($adminEmails)->send(new AdminDonationCreated($donation));
+                foreach ($adminEmails as $recipientEmail) {
+                    Mail::to($recipientEmail)->send(new AdminDonationCreated($donation));
+
+                    Log::info('Admin donation notification sent.', [
+                        'donation_id' => $donation->id,
+                        'recipient' => $recipientEmail,
+                    ]);
+                }
             } catch (\Throwable $exception) {
                 Log::error('Failed to send admin donation notification email.', [
                     'donation_id' => $donation->id,
