@@ -59,7 +59,7 @@
             background-position: center top;
             background-size: cover;
             background-repeat: no-repeat;
-            opacity: 0.9;
+            opacity: 0.78;
             filter: saturate(0.85) contrast(1.05);
             pointer-events: none;
         }
@@ -93,19 +93,27 @@
             min-height: 100vh;
         }
 
+        .welcome-main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            padding: 2rem;
+        }
+
         /* Filament-style CTA Section */
         .cta-section {
-            max-width: 920px;
-            margin: 4rem auto;
-            padding: 3.5rem 3.5rem 3.75rem;
-            background: var(--card);
-            border-radius: 1.5rem;
+            width: min(380px, 100%);
+            min-height: min(680px, calc(100vh - 8rem));
+            margin: 0 auto 0 0;
+            padding: 3.5rem 2.25rem;
+            background: rgba(20, 28, 40, 0.28);
+            border-radius: 1rem;
             text-align: center;
             box-shadow: var(--shadow);
             border: 1px solid var(--card-border);
+            backdrop-filter: blur(2px);
             position: relative;
             overflow: hidden;
-            flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -129,7 +137,7 @@
 
         .cta-title {
             font-family: 'Changa', sans-serif;
-            font-size: 1.7rem;
+            font-size: 1.4rem;
             font-weight: 700;
             margin-bottom: 0.75rem;
             color: var(--text-strong);
@@ -138,7 +146,7 @@
         }
 
         .cta-description {
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: var(--text-soft);
             margin-bottom: 2.25rem;
             max-width: 620px;
@@ -159,7 +167,7 @@
             padding: 0.75rem 1.75rem;
             border-radius: 999px;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.88rem;
             text-decoration: none;
             transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
             display: inline-flex;
@@ -343,8 +351,14 @@
 
         /* Responsive Design */
         @media (max-width: 768px) {
+            .welcome-main {
+                padding: 1.5rem 1rem;
+            }
+
             .cta-section {
-                margin: 2.5rem 1rem;
+                width: 100%;
+                min-height: 0;
+                margin: 1rem auto;
                 padding: 2.5rem 1.75rem;
             }
 
@@ -383,7 +397,7 @@
 @endif
 <div class="page-wrap">
 <!-- Main Content - Filament-style CTA Section -->
-<main style="flex: 1; display: flex; align-items: center; padding: 2rem;">
+<main class="welcome-main">
     <section class="cta-section">
         <!-- Filament badge -->
 {{--        <div class="filament-badge">--}}
@@ -412,7 +426,8 @@
     </section>
 </main>
 
-<!-- Filament-style Footer -->
+<!--
+Filament-style Footer
 <footer class="filament-footer">
     <div class="footer-content">
         <div class="footer-section">
@@ -455,6 +470,7 @@
         <p>&copy; 2026 منصة التبرعات. جميع الحقوق محفوظة.</p>
     </div>
 </footer>
+-->
 </div>
 </body>
 </html>
