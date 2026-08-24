@@ -56,7 +56,7 @@
             position: fixed;
             inset: 0;
             z-index: 0;
-            background-position: center;
+            background-position: center top;
             background-size: cover;
             background-repeat: no-repeat;
             opacity: 0.9;
@@ -91,49 +91,6 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-        }
-
-        /* Filament-style Header */
-        .filament-header {
-            width: 100%;
-            background: rgba(8, 12, 18, 0.6);
-            border-bottom: 1px solid rgba(148, 163, 184, 0.12);
-            backdrop-filter: blur(12px);
-        }
-
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 1.25rem 2rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 1.9rem;
-            font-weight: 700;
-            color: var(--text-strong);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            letter-spacing: 0.2px;
-        }
-
-        .logo i {
-            color: var(--accent);
-            font-size: 2.1rem;
-            filter: drop-shadow(0 6px 14px rgba(245, 158, 11, 0.4));
-        }
-
-        .logo-image {
-            height: 52px;
-            width: auto;
-            object-fit: contain;
-            border-radius: 0.65rem;
-            border: 1px solid rgba(248, 250, 252, 0.2);
-            background: rgba(255, 255, 255, 0.08);
-            padding: 0.2rem;
         }
 
         /* Filament-style CTA Section */
@@ -178,32 +135,6 @@
             color: var(--text-strong);
             letter-spacing: 0.2px;
             line-height: 1.25;
-        }
-
-        .hero-icon {
-            width: 86px;
-            height: 86px;
-            margin: 0 auto 1rem;
-            border-radius: 28px;
-            display: grid;
-            place-items: center;
-            background: rgba(248, 250, 252, 0.08);
-            border: 1px solid rgba(248, 250, 252, 0.15);
-            box-shadow: 0 18px 30px rgba(15, 23, 42, 0.35);
-        }
-
-        .hero-icon i {
-            font-size: 2.1rem;
-            color: var(--accent);
-        }
-
-        .hero-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
-            border-radius: inherit;
-            display: block;
         }
 
         .cta-description {
@@ -266,7 +197,7 @@
         .filament-footer {
             background: rgba(8, 12, 18, 0.7);
             border-top: 1px solid rgba(148, 163, 184, 0.12);
-            padding: 2rem 2rem 1.5rem;
+            padding: 0.5rem 0.75rem 0.35rem;
             margin-top: auto;
             backdrop-filter: blur(12px);
         }
@@ -276,33 +207,48 @@
             margin: 0 auto;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
+            gap: 0.5rem;
+        }
+
+        .footer-section {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
 
         .footer-section h3 {
-            font-size: 0.9rem;
+            font-size: 0.75rem;
             font-weight: 700;
-            margin-bottom: 1rem;
+            margin: 0;
             color: var(--text-strong);
             text-transform: uppercase;
             letter-spacing: 0.08em;
         }
 
+        .contact-list {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.25rem 0.75rem;
+        }
+
         .footer-section ul {
             list-style: none;
+            margin: 0;
         }
 
         .footer-section ul li {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0;
             color: var(--text-soft);
-            font-size: 0.875rem;
+            font-size: 0.75rem;
         }
 
         .footer-section ul li a {
             color: var(--text-soft);
             text-decoration: none;
             transition: color 0.2s ease;
-            font-size: 0.875rem;
+            font-size: 0.75rem;
         }
 
         .footer-section ul li a:hover {
@@ -311,8 +257,9 @@
 
         .footer-section p {
             color: var(--text-soft);
-            font-size: 0.9rem;
-            line-height: 1.7;
+            font-size: 0.75rem;
+            line-height: 1.2;
+            margin: 0;
         }
 
         .footer-section i {
@@ -321,12 +268,12 @@
 
         .social-links {
             display: flex;
-            gap: 0.75rem;
+            gap: 0.4rem;
         }
 
         .social-link {
-            width: 34px;
-            height: 34px;
+            width: 24px;
+            height: 24px;
             background: rgba(248, 250, 252, 0.08);
             border-radius: 0.5rem;
             display: flex;
@@ -335,7 +282,7 @@
             color: var(--text-soft);
             text-decoration: none;
             transition: all 0.2s ease;
-            font-size: 0.9rem;
+            font-size: 0.7rem;
             border: 1px solid rgba(248, 250, 252, 0.12);
         }
 
@@ -346,11 +293,11 @@
 
         .footer-bottom {
             text-align: center;
-            padding-top: 1.5rem;
-            margin-top: 1.5rem;
+            padding-top: 0.35rem;
+            margin-top: 0.35rem;
             border-top: 1px solid rgba(148, 163, 184, 0.12);
             color: var(--text-muted);
-            font-size: 0.85rem;
+            font-size: 0.7rem;
         }
 
         /* Filament-style badge/decoration */
@@ -424,18 +371,10 @@
                 justify-content: center;
             }
 
-            .logo {
-                font-size: 1.5rem;
-            }
-
-            .logo-image {
-                height: 42px;
-            }
         }
     </style>
 </head>
 @php
-    $logoUrl = !empty($homepageSetting?->logo_path) ? Storage::disk('public')->url($homepageSetting->logo_path) : null;
     $coverUrl = !empty($homepageSetting?->cover_path) ? Storage::disk('public')->url($homepageSetting->cover_path) : null;
 @endphp
 <body>
@@ -443,15 +382,6 @@
     <div class="cover-photo" style="background-image: url('{{ $coverUrl }}');"></div>
 @endif
 <div class="page-wrap">
-<!-- Filament-style Header with just title -->
-<header class="filament-header">
-    <div class="header-content">
-        <div class="logo">
-            <span>منصة فاعل خير</span>
-        </div>
-    </div>
-</header>
-
 <!-- Main Content - Filament-style CTA Section -->
 <main style="flex: 1; display: flex; align-items: center; padding: 2rem;">
     <section class="cta-section">
@@ -460,14 +390,6 @@
 {{--            <i class="fas fa-heart"></i>--}}
 {{--            منصة موثوقة ومعتمدة--}}
 {{--        </div>--}}
-
-        <div class="hero-icon" aria-hidden="true">
-            @if ($logoUrl)
-                <img src="{{ $logoUrl }}" alt="">
-            @else
-                <i class="fas fa-hand-holding-heart"></i>
-            @endif
-        </div>
 
         <h2 class="cta-title">هل أنت مستعد للمساهمة؟</h2>
         <p class="cta-description">
@@ -512,10 +434,9 @@
 
         <div class="footer-section">
             <h3>تواصل معنا</h3>
-            <ul>
+            <ul class="contact-list">
                 <li><i class="fas fa-phone"></i> +961 ------</li>
                 <li><i class="fas fa-envelope"></i> info@donation.com</li>
-                <li><i class="fas fa-map-marker-alt"></i> لبنان</li>
             </ul>
         </div>
 

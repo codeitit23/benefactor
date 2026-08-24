@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use App\Filament\Resources\DonationResource\Pages\ListDonations;
 use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
+use Filament\Support\Facades\FilamentView;
+use Filament\Tables\View\TablesRenderHook;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
@@ -27,5 +30,11 @@ class AppServiceProvider extends ServiceProvider
         LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {
             $switch->locales(['ar']);
         });
+
+        FilamentView::registerRenderHook(
+            TablesRenderHook::TOOLBAR_SEARCH_AFTER,
+            fn () => view('filament.tables.current-status-filter'),
+            scopes: [ListDonations::class],
+        );
     }
 }

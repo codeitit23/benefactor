@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Mail\AdminDonationCreated;
+use App\Mail\DonationStatusChanged;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Log;
@@ -87,6 +88,57 @@ class Donation extends Model
                 }
             } catch (\Throwable $exception) {
                 Log::error('Failed to send admin donation notification email.', [
+                    'donation_id' => $donation->id,
+                    'error' => $exception->getMessage(),
+                ]);
+            }
+        });
+
+        static::updated(function (self $donation): void {
+            if (! $donation->wasChanged('current_status')) {
+                return;
+            }
+
+            try {
+                $donorEmail = $donation->user?->email;
+                $currentAdminId = auth()->id();
+                $recipientEmails = [];
+
+                if (is_string($donorEmail) && filter_var($donorEmail, FILTER_VALIDATE_EMAIL)) {
+                    $recipientEmails[] = $donorEmail;
+                }
+
+                $adminEmails = User::query()
+                    ->where('role', 'admin')
+                    ->when($currentAdminId, fn ($query) => $query->whereKeyNot($currentAdminId))
+                    ->whereNotNull('email')
+                    ->pluck('email')
+                    ->filter(fn ($email) => is_string($email) && filter_var($email, FILTER_VALIDATE_EMAIL))
+                    ->all();
+
+                $fallbackEmail = env('ADMIN_NOTIFICATION_EMAIL');
+                if (is_string($fallbackEmail) && filter_var($fallbackEmail, FILTER_VALIDATE_EMAIL)) {
+                    $adminEmails[] = $fallbackEmail;
+                }
+
+                $recipientEmails = array_values(array_unique(array_merge($recipientEmails, $adminEmails)));
+
+                foreach ($recipientEmails as $recipientEmail) {
+                    Mail::to($recipientEmail)->send(new DonationStatusChanged(
+                        $donation,
+                        $donation->getOriginal('current_status'),
+                        $donation->current_status,
+                    ));
+                }
+
+                Log::info('Donation status change notifications sent.', [
+                    'donation_id' => $donation->id,
+                    'recipients' => $recipientEmails,
+                    'old_status' => $donation->getOriginal('current_status'),
+                    'new_status' => $donation->current_status,
+                ]);
+            } catch (\Throwable $exception) {
+                Log::error('Failed to send donation status change notifications.', [
                     'donation_id' => $donation->id,
                     'error' => $exception->getMessage(),
                 ]);

@@ -10,6 +10,8 @@ class ListDonations extends ListRecords
 {
     protected static string $resource = DonationResource::class;
 
+    public ?string $currentStatus = null;
+
     protected function getHeaderActions(): array
     {
         return [

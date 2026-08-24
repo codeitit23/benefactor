@@ -11,6 +11,7 @@ use Filament\Forms\Form;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -284,6 +285,12 @@ class DonationResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function (Builder $query, HasTable $livewire): Builder {
+                return $query->when(
+                    $livewire->currentStatus,
+                    fn (Builder $query, string $status): Builder => $query->where('current_status', $status),
+                );
+            })
             ->columns([
                 Tables\Columns\TextColumn::make('donation_number')
                     ->label('رقم التبرع')
@@ -383,6 +390,7 @@ class DonationResource extends Resource
                     ->sortable()
                     ->toggleable(),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 Tables\Filters\Filter::make('donor_phone')
                     ->label('هاتف المتبرع')
@@ -467,15 +475,6 @@ class DonationResource extends Resource
                         'cash' => 'تبرع نقدي',
                     ])
                     ->label('نوع التبرع'),
-
-                Tables\Filters\SelectFilter::make('current_status')
-                    ->options([
-                        'pending' => 'قيد الانتظار',
-                        'approved' => 'معتمد',
-                        'rejected' => 'مرفوض',
-                        'completed' => 'مكتمل',
-                    ])
-                    ->label('الحالة الحالية'),
 
                 Tables\Filters\SelectFilter::make('item_type_id')
                     ->label('نوع العنصر')
