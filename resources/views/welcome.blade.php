@@ -106,7 +106,7 @@
             min-height: min(680px, calc(100vh - 8rem));
             margin: 0 auto 0 0;
             padding: 3.5rem 2.25rem;
-            background: rgba(20, 28, 40, 0.28);
+            background: rgba(20, 28, 40, 0.39);
             border-radius: 1rem;
             text-align: center;
             box-shadow: var(--shadow);

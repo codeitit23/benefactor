@@ -391,6 +391,8 @@ class DonationResource extends Resource
                     ->toggleable(),
             ])
             ->defaultSort('created_at', 'desc')
+            ->defaultPaginationPageOption(100)
+            ->paginationPageOptions([10, 25, 50, 100, 'all'])
             ->filters([
                 Tables\Filters\Filter::make('donor_phone')
                     ->label('هاتف المتبرع')
