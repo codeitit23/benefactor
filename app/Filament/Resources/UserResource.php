@@ -45,7 +45,7 @@ class UserResource extends Resource
                 Forms\Components\TextInput::make('email')
                     ->label('البريد الالكتروني')
                     ->email()
-                    ->required()
+                    ->nullable()
                     ->unique(ignoreRecord: true)
                     ->maxLength(255),
 

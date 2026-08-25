@@ -6,6 +6,7 @@ use App\Filament\Resources\DonationResource\Pages;
 use App\Filament\Resources\DonationResource\RelationManagers;
 use App\Filament\Resources\UserResource;
 use App\Models\Donation;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Set;
@@ -15,6 +16,7 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
 
 class DonationResource extends Resource
 {
@@ -301,6 +303,11 @@ class DonationResource extends Resource
                 Tables\Columns\TextColumn::make('donor_name')
                     ->label('المتبرع')
                     ->getStateUsing(fn ($record) => $record->donor_name ?? $record->user?->name)
+                    ->url(fn ($record) => $record->user
+                        ? UserResource::getUrl('edit', ['record' => $record->user])
+                        : null)
+                    ->color(fn ($record): string => $record->user ? 'primary' : 'gray')
+                    ->icon(fn ($record): ?string => $record->user ? 'heroicon-m-arrow-top-right-on-square' : null)
                     ->searchable()
                     ->sortable()
                     ->placeholder('ضيف')
@@ -538,16 +545,28 @@ class DonationResource extends Resource
                         $record->update(['beneficiary_id' => $data['beneficiary_id']]);
                     }),
                 Tables\Actions\Action::make('create_user')
-                    ->label('إضافة مستخدم')
+                    ->label('إنشاء حساب')
                     ->icon('heroicon-o-user-plus')
                     ->color('warning')
                     ->visible(fn ($record) => auth()->user()?->isAdmin() && blank($record->user_id))
-                    ->url(fn ($record) => UserResource::getUrl('create', [
-                        'donation_id' => $record->id,
-                        'name' => $record->donor_name,
-                        'phone' => $record->donor_phone,
-                        'address' => $record->donor_address,
-                    ])),
+                    ->requiresConfirmation()
+                    ->action(function (Donation $record) {
+                        $user = User::create([
+                            'name' => $record->donor_name,
+                            'email' => null,
+                            'password' => Str::random(40),
+                            'role' => 'user',
+                            'active' => true,
+                            'phone' => $record->donor_phone,
+                            'address' => $record->donor_address,
+                        ]);
+
+                        $record->update(['user_id' => $user->id]);
+
+                        return redirect()->to(UserResource::getUrl('edit', [
+                            'record' => $user,
+                        ]));
+                    }),
                 Tables\Actions\Action::make('approve')
                     ->label('اعتماد')
                     ->icon('heroicon-o-check-circle')
