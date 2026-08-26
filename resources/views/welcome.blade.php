@@ -14,22 +14,22 @@
 
     <style>
         :root {
-            --bg-0: #0b0f14;
-            --bg-1: #0f1722;
-            --bg-2: #121a26;
-            --text-strong: #f8fafc;
-            --text-soft: #cbd5e1;
-            --text-muted: #94a3b8;
-            --card: rgba(20, 28, 40, 0.75);
-            --card-border: rgba(148, 163, 184, 0.15);
+            --bg-0: #f8fafc;
+            --bg-1: #eef2f7;
+            --bg-2: #e2e8f0;
+            --text-strong: #172033;
+            --text-soft: #475569;
+            --text-muted: #64748b;
+            --card: rgba(255, 255, 255, 0.88);
+            --card-border: rgba(71, 85, 105, 0.18);
             --accent: #f59e0b;
             --accent-2: #22c55e;
             --accent-3: #0ea5e9;
             --button-bg: #f59e0b;
             --button-bg-hover: #fbbf24;
-            --button-ghost: rgba(248, 250, 252, 0.08);
-            --button-ghost-border: rgba(248, 250, 252, 0.2);
-            --shadow: 0 24px 60px rgba(3, 7, 18, 0.55);
+            --button-ghost: rgba(15, 23, 42, 0.06);
+            --button-ghost-border: rgba(71, 85, 105, 0.24);
+            --shadow: 0 24px 60px rgba(71, 85, 105, 0.16);
         }
 
         * {
@@ -54,13 +54,16 @@
 
         .cover-photo {
             position: fixed;
-            inset: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: auto;
+            width: calc(100% - 430px);
             z-index: 0;
-            background-position: center top;
-            background-size: cover;
+            background-position: center;
+            background-size: 100% 100%;
             background-repeat: no-repeat;
-            opacity: 0.78;
-            filter: saturate(0.85) contrast(1.05);
+            opacity: 1;
             pointer-events: none;
         }
 
@@ -97,17 +100,18 @@
             flex: 1;
             display: flex;
             align-items: center;
-            padding: 2rem;
+            padding: 0;
+            min-height: 100vh;
         }
 
         /* Filament-style CTA Section */
         .cta-section {
-            width: min(380px, 100%);
-            min-height: min(680px, calc(100vh - 8rem));
+            width: 430px;
+            min-height: 100vh;
             margin: 0 auto 0 0;
             padding: 3.5rem 2.25rem;
-            background: rgba(20, 28, 40, 0.39);
-            border-radius: 1rem;
+            background: linear-gradient(145deg, #dcd0be 0%, #e9e1d4 48%, #cbbda6 100%);
+            border-radius: 0;
             text-align: center;
             box-shadow: var(--shadow);
             border: 1px solid var(--card-border);
@@ -353,6 +357,17 @@
         @media (max-width: 768px) {
             .welcome-main {
                 padding: 1.5rem 1rem;
+                min-height: 100vh;
+            }
+
+            .cover-photo {
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                width: auto;
+                background-size: 100% 100%;
+                opacity: 0.45;
             }
 
             .cta-section {
