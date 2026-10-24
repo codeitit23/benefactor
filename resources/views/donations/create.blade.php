@@ -60,6 +60,9 @@
                 grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
                 gap: 14px;
             }
+            .grid + .grid {
+                margin-top: 14px;
+            }
             .uploader {
                 border: 1px dashed #2b3a55;
                 background: rgba(11, 18, 32, 0.6);
@@ -278,6 +281,8 @@
                             <input id="amount" name="amount" type="number" step="0.01" min="0" value="{{ old('amount') }}">
                             @error('amount') <div class="error">{{ $message }}</div> @enderror
                         </div>
+                    </div>
+                    <div class="grid">
                         <div class="item-only">
                             <label>صور العنصر (حد أقصى 5)</label>
                             <div class="uploader" data-input="item_images" data-multiple="true">
