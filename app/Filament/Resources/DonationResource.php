@@ -118,9 +118,8 @@ class DonationResource extends Resource
                                     ->options(\App\Models\ItemType::active()->pluck('name', 'id'))
                                     ->searchable()
                                     ->preload()
-                                    ->required()
-                                    ->live()
-                                    ->visible(fn (Forms\Get $get) => $get('donation_type') === 'item'),
+                                    ->required(fn (Forms\Get $get) => $get('donation_type') === 'item')
+                                    ->live(),
 
                                 Forms\Components\Select::make('item_subcategory_id')
                                     ->label('الفئة الفرعية للعنصر')
@@ -133,16 +132,15 @@ class DonationResource extends Resource
                                     })
                                     ->searchable()
                                     ->preload()
-                                    ->required()
-                                    ->visible(fn (Forms\Get $get) => $get('donation_type') === 'item' && $get('item_type_id')),
+                                    ->required(fn (Forms\Get $get) => $get('donation_type') === 'item')
+                                    ->visible(fn (Forms\Get $get) => filled($get('item_type_id'))),
 
                                 Forms\Components\Select::make('item_status_id')
                                     ->label('حالة العنصر')
                                     ->options(\App\Models\ItemStatus::active()->pluck('name', 'id'))
                                     ->searchable()
                                     ->preload()
-                                    ->required()
-                                    ->visible(fn (Forms\Get $get) => $get('donation_type') === 'item'),
+                                    ->required(fn (Forms\Get $get) => $get('donation_type') === 'item'),
 
                                 // Cash donation fields
                                 Forms\Components\Select::make('payment_method')
@@ -160,8 +158,7 @@ class DonationResource extends Resource
                                     ->numeric()
                                     ->prefix('USD')
                                     ->minValue(0)
-                                    ->required()
-                                    ->visible(fn (Forms\Get $get) => $get('donation_type') === 'cash'),
+                                    ->required(fn (Forms\Get $get) => $get('donation_type') === 'cash'),
                             ]),
 
                         Forms\Components\Grid::make(3)

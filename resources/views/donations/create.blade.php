@@ -230,7 +230,7 @@
                             </select>
                             @error('donation_type') <div class="error">{{ $message }}</div> @enderror
                         </div>
-                        <div class="item-only">
+                        <div>
                             <label for="item_type_id">نوع العنصر</label>
                             <select id="item_type_id" name="item_type_id">
                                 <option value="">اختر</option>
@@ -240,7 +240,7 @@
                             </select>
                             @error('item_type_id') <div class="error">{{ $message }}</div> @enderror
                         </div>
-                        <div class="item-only">
+                        <div>
                             <label for="item_subcategory_id">الفئة الفرعية</label>
                             <select id="item_subcategory_id" name="item_subcategory_id">
                                 <option value="">اختر</option>
@@ -252,7 +252,7 @@
                             </select>
                             @error('item_subcategory_id') <div class="error">{{ $message }}</div> @enderror
                         </div>
-                        <div class="item-only">
+                        <div>
                             <label for="item_status_id">حالة العنصر</label>
                             <select id="item_status_id" name="item_status_id">
                                 <option value="">اختر</option>
@@ -273,7 +273,7 @@
                             </select>
                             @error('payment_method') <div class="error">{{ $message }}</div> @enderror
                         </div>
-                        <div class="cash-only hidden">
+                        <div>
                             <label for="amount">المبلغ (USD)</label>
                             <input id="amount" name="amount" type="number" step="0.01" min="0" value="{{ old('amount') }}">
                             @error('amount') <div class="error">{{ $message }}</div> @enderror
