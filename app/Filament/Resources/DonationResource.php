@@ -210,7 +210,6 @@ class DonationResource extends Resource
                             ->schema([
                                 Forms\Components\DatePicker::make('pickup_date')
                                     ->label('تاريخ الاستلام')
-                                    ->minDate(now())
                                     ->visible(fn (Forms\Get $get) => $get('donation_type') === 'item'),
 
                                 Forms\Components\Textarea::make('notes')
