@@ -220,6 +220,43 @@ class DonationResource extends Resource
                     ])
                     ->visible(fn (Forms\Get $get) => $get('donation_type') === 'item'),
 
+                Forms\Components\Section::make('المساهمون الإضافيون')
+                    ->visible(fn (Forms\Get $get): bool => auth()->user()?->isAdmin()
+                        && $get('donation_type') === 'item')
+                    ->schema([
+                        Forms\Components\Repeater::make('contributors')
+                            ->label('المساهمات')
+                            ->relationship()
+                            ->defaultItems(0)
+                            ->addActionLabel('إضافة مساهم')
+                            ->reorderable(false)
+                            ->columns(2)
+                            ->schema([
+                                Forms\Components\Select::make('user_id')
+                                    ->label('المساهم')
+                                    ->relationship('user', 'name')
+                                    ->searchable(['name', 'phone'])
+                                    ->preload()
+                                    ->required(),
+
+                                Forms\Components\TextInput::make('amount')
+                                    ->label('المبلغ')
+                                    ->prefix('USD')
+                                    ->numeric()
+                                    ->minValue(0.01)
+                                    ->maxValue(99999999.99)
+                                    ->step(0.01)
+                                    ->rule('decimal:0,2')
+                                    ->required(),
+
+                                Forms\Components\Textarea::make('notes')
+                                    ->label('ملاحظات')
+                                    ->maxLength(1000)
+                                    ->rows(2)
+                                    ->columnSpanFull(),
+                            ]),
+                    ]),
+
                 Forms\Components\Section::make('اجراءات المدير')
                     ->visible(fn (string $operation): bool => auth()->user()?->isAdmin() || $operation === 'view')
                     ->schema([
@@ -298,6 +335,22 @@ class DonationResource extends Resource
 
                 Tables\Columns\TextColumn::make('donor_name')
                     ->label('المتبرع')
+                    ->view('filament.tables.columns.donation-donor')
+                    ->disableClick()
+                    ->action(
+                        Tables\Actions\Action::make('view_contributors')
+                            ->label('المساهمون الإضافيون')
+                            ->authorize(fn (): bool => (bool) auth()->user()?->isAdmin())
+                            ->visible(fn (Donation $record): bool => auth()->user()?->isAdmin()
+                                && $record->contributors()->exists())
+                            ->modalHeading('المساهمون الإضافيون')
+                            ->modalContent(fn (Donation $record) => view('filament.donations.contributors', [
+                                'contributors' => $record->contributors()->with('user')->get(),
+                            ]))
+                            ->modalSubmitAction(false)
+                            ->modalCancelActionLabel('إغلاق')
+                    )
+                    ->counts('contributors')
                     ->getStateUsing(fn ($record) => $record->donor_name ?? $record->user?->name)
                     ->url(fn ($record) => $record->user
                         ? UserResource::getUrl('edit', ['record' => $record->user])
