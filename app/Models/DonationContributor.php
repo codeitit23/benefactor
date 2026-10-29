@@ -17,6 +17,26 @@ class DonationContributor extends Model
         'amount' => 'decimal:2',
     ];
 
+    protected static function booted(): void
+    {
+        static::saved(function (self $contributor): void {
+            $contributor->syncDonationAmount();
+        });
+
+        static::deleted(function (self $contributor): void {
+            $contributor->syncDonationAmount();
+        });
+    }
+
+    private function syncDonationAmount(): void
+    {
+        $donation = $this->donation;
+
+        if ($donation) {
+            $donation->updateQuietly(['amount' => $donation->contributors()->sum('amount')]);
+        }
+    }
+
     public function donation(): BelongsTo
     {
         return $this->belongsTo(Donation::class);

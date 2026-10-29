@@ -46,6 +46,12 @@ class Donation extends Model
     {
         parent::boot();
 
+        static::saving(function (self $donation): void {
+            if ($donation->exists && $donation->contributors()->exists()) {
+                $donation->amount = $donation->contributors()->sum('amount');
+            }
+        });
+
         static::creating(function ($donation) {
             if (empty($donation->donation_number)) {
                 $nextId = (static::max('id') ?? 0) + 1;
@@ -182,6 +188,16 @@ class Donation extends Model
     public function contributors(): HasMany
     {
         return $this->hasMany(DonationContributor::class);
+    }
+
+    public static function totalContributions(array $contributors): string
+    {
+        $cents = array_sum(array_map(
+            fn (array $contributor): int => (int) round((float) ($contributor['amount'] ?? 0) * 100),
+            $contributors,
+        ));
+
+        return number_format($cents / 100, 2, '.', '');
     }
 
     public function itemType(): BelongsTo

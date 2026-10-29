@@ -159,6 +159,13 @@ class DonationResource extends Resource
                                     ->numeric()
                                     ->prefix('USD')
                                     ->minValue(0)
+                                    ->readOnly(fn (Forms\Get $get): bool => filled($get('contributors')))
+                                    ->helperText(fn (Forms\Get $get): ?string => filled($get('contributors'))
+                                        ? 'يتم احتساب المبلغ تلقائياً من مجموع مساهمات المساهمين.'
+                                        : null)
+                                    ->dehydrateStateUsing(fn ($state, Forms\Get $get) => filled($get('contributors'))
+                                        ? Donation::totalContributions($get('contributors'))
+                                        : $state)
                                     ->required(fn (Forms\Get $get) => $get('donation_type') === 'cash'),
                             ]),
 

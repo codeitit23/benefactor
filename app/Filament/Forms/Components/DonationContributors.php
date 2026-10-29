@@ -24,6 +24,9 @@ class DonationContributors extends Repeater
                 : 'سيتم حفظ المساهمين عند إنشاء التبرع.')
             ->relationship('contributors')
             ->defaultItems(0)
+            ->afterStateUpdated(function (DonationContributors $component): void {
+                ($component->getSetCallback())('amount', Donation::totalContributions($component->getState() ?? []));
+            })
             ->reorderable(false)
             ->schema(static::contributionFields())
             ->addAction(fn (Action $action): Action => $action

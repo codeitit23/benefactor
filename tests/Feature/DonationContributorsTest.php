@@ -11,8 +11,10 @@ use App\Models\ItemSubcategory;
 use App\Models\ItemType;
 use App\Models\User;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\TextInput;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -65,7 +67,7 @@ class DonationContributorsTest extends TestCase
 
         $donation = Donation::firstOrFail();
         $this->assertSame($donor->id, $donation->user_id);
-        $this->assertNull($donation->amount);
+        $this->assertSame('60.25', $donation->amount);
         $this->assertCount(2, $donation->contributors);
         $contribution = $donation->contributors->first();
         $this->assertSame('50.25', $contribution->amount);
@@ -83,6 +85,7 @@ class DonationContributorsTest extends TestCase
 
         $this->assertCount(1, $donation->fresh()->contributors);
         $this->assertSame('75.00', $contribution->fresh()->amount);
+        $this->assertSame('75.00', $donation->fresh()->amount);
         $this->assertSame($donor->id, $donation->fresh()->user_id);
 
         Livewire::test(EditDonation::class, ['record' => $donation->id])
@@ -91,6 +94,7 @@ class DonationContributorsTest extends TestCase
             ->assertHasNoFormErrors();
 
         $this->assertDatabaseCount('donation_contributors', 0);
+        $this->assertSame('0.00', $donation->fresh()->amount);
     }
 
     public function test_contributions_require_a_user_and_a_positive_amount(): void
@@ -197,7 +201,9 @@ class DonationContributorsTest extends TestCase
             ->callFormComponentAction('contributors', 'add', [
                 'user_id' => $payer->id, 'amount' => '42.00', 'notes' => 'Paid immediately',
             ])
-            ->assertHasNoFormComponentActionErrors();
+            ->assertHasNoFormComponentActionErrors()
+            ->assertSet('data.amount', '42.00')
+            ->assertFormFieldIsReadOnly('amount');
 
         $this->assertDatabaseHas('donation_contributors', [
             'donation_id' => $donation->id, 'user_id' => $payer->id, 'amount' => '42.00',
@@ -211,6 +217,70 @@ class DonationContributorsTest extends TestCase
         $page->call('save')->assertHasNoFormErrors();
         $this->assertDatabaseCount('donation_contributors', 1);
         $this->assertSame('Unrelated unsaved change', $donation->fresh()->notes);
+    }
+
+    public function test_new_donation_amount_is_the_total_and_cannot_be_overridden(): void
+    {
+        $payer = User::factory()->create();
+
+        Livewire::test(CreateDonation::class)
+            ->fillForm($this->donationData(User::factory()->create()))
+            ->callFormComponentAction('contributors', 'add', ['user_id' => $payer->id, 'amount' => '0.10'])
+            ->callFormComponentAction('contributors', 'add', ['user_id' => $payer->id, 'amount' => '0.20'])
+            ->assertSet('data.amount', '0.30')
+            ->assertFormFieldIsReadOnly('amount')
+            ->set('data.amount', '999.00')
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        $donation = Donation::firstOrFail();
+        $this->assertSame('0.30', $donation->amount);
+
+        $donation->update(['amount' => '500.00']);
+        $this->assertSame('0.30', $donation->fresh()->amount);
+    }
+
+    public function test_amount_recalculates_after_edit_and_unlocks_after_last_contributor_is_deleted(): void
+    {
+        $donation = Donation::create($this->donationData(User::factory()->create()));
+        $contribution = $donation->contributors()->create([
+            'user_id' => User::factory()->create()->id, 'amount' => '20.00',
+        ]);
+        $key = 'record-'.$contribution->id;
+
+        $page = Livewire::test(EditDonation::class, ['record' => $donation->id])
+            ->assertSet('data.amount', '20.00')
+            ->assertFormFieldIsReadOnly('amount')
+            ->callFormComponentAction('contributors', 'edit', ['amount' => '25.50'], ['item' => $key])
+            ->assertSet('data.amount', '25.50');
+
+        $this->assertSame('25.50', $donation->fresh()->amount);
+
+        $page->callFormComponentAction('contributors', 'delete', arguments: ['item' => $key])
+            ->assertSet('data.amount', '0.00')
+            ->assertFormFieldExists('amount', fn (TextInput $field): bool => ! $field->isReadOnly());
+
+        $this->assertSame('0.00', $donation->fresh()->amount);
+
+        $page->fillForm(['amount' => '15.00'])->call('save')->assertHasNoFormErrors();
+        $this->assertSame('15.00', $donation->fresh()->amount);
+    }
+
+    public function test_total_migration_updates_existing_contributions_and_preserves_manual_amounts(): void
+    {
+        $donor = User::factory()->create();
+        $donation = Donation::create($this->donationData($donor));
+        $manualDonation = Donation::create([
+            'user_id' => $donor->id, 'donation_type' => 'cash', 'payment_method' => 'cash', 'amount' => '100.00',
+        ]);
+        $donation->contributors()->create(['user_id' => $donor->id, 'amount' => '12.34']);
+        DB::table('donations')->where('id', $donation->id)->update(['amount' => null]);
+
+        $migration = require database_path('migrations/2026_10_29_000001_sync_donation_contribution_totals.php');
+        $migration->up();
+
+        $this->assertSame('12.34', $donation->fresh()->amount);
+        $this->assertSame('100.00', $manualDonation->fresh()->amount);
     }
 
     public function test_non_admin_edit_preserves_existing_contributions(): void
