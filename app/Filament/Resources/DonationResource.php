@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Forms\Components\DonationContributors;
 use App\Filament\Resources\DonationResource\Pages;
 use App\Filament\Resources\DonationResource\RelationManagers;
 use App\Filament\Resources\UserResource;
@@ -184,6 +185,10 @@ class DonationResource extends Resource
                                     ->required(fn (Forms\Get $get) => blank($get('user_id')))
                                     ->visible(fn (Forms\Get $get) => blank($get('user_id')) || auth()->user()?->isAdmin()),
                             ]),
+
+                        DonationContributors::make('contributors')
+                            ->visible(fn (Forms\Get $get): bool => auth()->user()?->isAdmin()
+                                && $get('donation_type') === 'item'),
                     ]),
 
                 Forms\Components\Section::make('تفاصيل العنصر')
@@ -219,43 +224,6 @@ class DonationResource extends Resource
                             ]),
                     ])
                     ->visible(fn (Forms\Get $get) => $get('donation_type') === 'item'),
-
-                Forms\Components\Section::make('المساهمون الإضافيون')
-                    ->visible(fn (Forms\Get $get): bool => auth()->user()?->isAdmin()
-                        && $get('donation_type') === 'item')
-                    ->schema([
-                        Forms\Components\Repeater::make('contributors')
-                            ->label('المساهمات')
-                            ->relationship()
-                            ->defaultItems(0)
-                            ->addActionLabel('إضافة مساهم')
-                            ->reorderable(false)
-                            ->columns(2)
-                            ->schema([
-                                Forms\Components\Select::make('user_id')
-                                    ->label('المساهم')
-                                    ->relationship('user', 'name')
-                                    ->searchable(['name', 'phone'])
-                                    ->preload()
-                                    ->required(),
-
-                                Forms\Components\TextInput::make('amount')
-                                    ->label('المبلغ')
-                                    ->prefix('USD')
-                                    ->numeric()
-                                    ->minValue(0.01)
-                                    ->maxValue(99999999.99)
-                                    ->step(0.01)
-                                    ->rule('decimal:0,2')
-                                    ->required(),
-
-                                Forms\Components\Textarea::make('notes')
-                                    ->label('ملاحظات')
-                                    ->maxLength(1000)
-                                    ->rows(2)
-                                    ->columnSpanFull(),
-                            ]),
-                    ]),
 
                 Forms\Components\Section::make('اجراءات المدير')
                     ->visible(fn (string $operation): bool => auth()->user()?->isAdmin() || $operation === 'view')

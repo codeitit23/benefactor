@@ -109,6 +109,110 @@ class DonationContributorsTest extends TestCase
         $this->assertDatabaseCount('donation_contributors', 0);
     }
 
+    public function test_contributors_can_be_added_and_edited_in_dialogs_before_saving(): void
+    {
+        $donor = User::factory()->create();
+        $payer = User::factory()->create(['name' => 'Popup Contributor']);
+        $page = Livewire::test(CreateDonation::class)
+            ->fillForm($this->donationData($donor))
+            ->mountFormComponentAction('contributors', 'add')
+            ->setFormComponentActionData([
+                'user_id' => $payer->id, 'amount' => '35.50', 'notes' => 'Transport',
+            ])
+            ->callMountedFormComponentAction()
+            ->assertHasNoFormComponentActionErrors()
+            ->assertSee('Popup Contributor')
+            ->assertSee('USD 35.50')
+            ->assertSee('Transport');
+
+        $this->assertDatabaseCount('donation_contributors', 0);
+        $key = array_key_first($page->get('data.contributors'));
+
+        $page->mountFormComponentAction('contributors', 'edit', ['item' => $key])
+            ->assertFormComponentActionDataSet([
+                'user_id' => $payer->id, 'amount' => '35.50', 'notes' => 'Transport',
+            ])
+            ->setFormComponentActionData(['amount' => '40.00', 'notes' => 'Updated transport'])
+            ->callMountedFormComponentAction()
+            ->assertHasNoFormComponentActionErrors()
+            ->assertSee('USD 40.00')
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas('donation_contributors', [
+            'user_id' => $payer->id, 'amount' => '40.00', 'notes' => 'Updated transport',
+        ]);
+    }
+
+    public function test_popup_validation_and_cancel_do_not_add_a_contributor(): void
+    {
+        $page = Livewire::test(CreateDonation::class)
+            ->fillForm($this->donationData(User::factory()->create()))
+            ->mountFormComponentAction('contributors', 'add')
+            ->setFormComponentActionData(['user_id' => null, 'amount' => '-1'])
+            ->callMountedFormComponentAction()
+            ->assertHasFormComponentActionErrors(['user_id' => 'required', 'amount' => 'min']);
+
+        $this->assertEmpty($page->get('data.contributors'));
+
+        $page->unmountFormComponentAction()
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseCount('donation_contributors', 0);
+    }
+
+    public function test_existing_contributors_can_be_edited_and_removed_through_actions(): void
+    {
+        $donation = Donation::create($this->donationData(User::factory()->create()));
+        $contribution = $donation->contributors()->create([
+            'user_id' => User::factory()->create()->id, 'amount' => '20.00',
+        ]);
+        $key = 'record-'.$contribution->id;
+
+        Livewire::test(EditDonation::class, ['record' => $donation->id])
+            ->callFormComponentAction('contributors', 'edit', ['amount' => '30.00'], ['item' => $key])
+            ->assertHasNoFormComponentActionErrors();
+
+        $this->assertSame('30.00', $contribution->fresh()->amount);
+
+        Livewire::test(EditDonation::class, ['record' => $donation->id])
+            ->assertSee('USD 30.00')
+            ->callFormComponentAction('contributors', 'delete', arguments: ['item' => $key])
+            ->assertHasNoFormComponentActionErrors();
+
+        $this->assertDatabaseCount('donation_contributors', 0);
+
+        Livewire::test(EditDonation::class, ['record' => $donation->id])
+            ->assertDontSee('USD 30.00');
+    }
+
+    public function test_adding_to_existing_donation_saves_immediately_without_saving_other_fields(): void
+    {
+        $donation = Donation::create($this->donationData(User::factory()->create()));
+        $payer = User::factory()->create(['name' => 'Immediate Contributor']);
+
+        $page = Livewire::test(EditDonation::class, ['record' => $donation->id])
+            ->fillForm(['notes' => 'Unrelated unsaved change'])
+            ->callFormComponentAction('contributors', 'add', [
+                'user_id' => $payer->id, 'amount' => '42.00', 'notes' => 'Paid immediately',
+            ])
+            ->assertHasNoFormComponentActionErrors();
+
+        $this->assertDatabaseHas('donation_contributors', [
+            'donation_id' => $donation->id, 'user_id' => $payer->id, 'amount' => '42.00',
+        ]);
+        $this->assertNull($donation->fresh()->notes);
+
+        Livewire::test(EditDonation::class, ['record' => $donation->id])
+            ->assertSee('Immediate Contributor')
+            ->assertSee('USD 42.00');
+
+        $page->call('save')->assertHasNoFormErrors();
+        $this->assertDatabaseCount('donation_contributors', 1);
+        $this->assertSame('Unrelated unsaved change', $donation->fresh()->notes);
+    }
+
     public function test_non_admin_edit_preserves_existing_contributions(): void
     {
         $donor = User::factory()->create(['role' => 'user', 'active' => true]);
